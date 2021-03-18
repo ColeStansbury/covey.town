@@ -9,7 +9,7 @@ import {MuiThemeProvider} from '@material-ui/core/styles';
 import assert from 'assert';
 import WorldMap from './components/world/WorldMap';
 import VideoOverlay from './components/VideoCall/VideoOverlay/VideoOverlay';
-import {CoveyAppState, NearbyPlayers, PlayerMessage} from './CoveyTypes';
+import {CoveyAppState, NearbyPlayers} from './CoveyTypes';
 import VideoContext from './contexts/VideoContext';
 import Login from './components/Login/Login';
 import CoveyAppContext from './contexts/CoveyAppContext';
@@ -24,6 +24,7 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import {Callback} from './components/VideoCall/VideoFrontend/types';
 import Player, {ServerPlayer, UserLocation} from './classes/Player';
+import {PlayerMessage} from "./classes/PlayerMessage";
 import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatBox from "./components/Chat/chat-box";
@@ -170,6 +171,11 @@ async function GameController(initData: TownJoinResponse,
       player: Player.fromServerPlayer(player),
     });
   });
+  socket.on('receivePlayerMessage', (message: PlayerMessage) => {
+    if (message.senderProfileId !== gamePlayerID) {
+      dispatchAppUpdate({action: 'playerMessage', message});
+    }
+  });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
       dispatchAppUpdate({action: 'playerMoved', player: Player.fromServerPlayer(player)});
@@ -181,6 +187,10 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({action: 'disconnect'});
   });
+  const emitMessage = (message: PlayerMessage) => {
+    socket.emit('sendPlayerMessage', message);
+  };
+
   const emitMovement = (location: UserLocation) => {
     socket.emit('playerMovement', location);
     dispatchAppUpdate({action: 'weMoved', location});

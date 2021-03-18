@@ -16,12 +16,6 @@ export type NearbyPlayers = {
   nearbyPlayers: Player[]
 };
 
-export type PlayerMessage = {
-  readonly dateTime: Date,
-  content: string,
-  recipient: "town" | { userProfileId: string },
-};
-
 export type CoveyAppState = {
   sessionToken: string,
   userName: string,

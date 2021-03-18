@@ -1,10 +1,11 @@
-import { customAlphabet, nanoid } from 'nanoid';
-import { UserLocation } from '../CoveyTypes';
+import {customAlphabet, nanoid} from 'nanoid';
+import {UserLocation} from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import Player from '../types/Player';
 import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
+import PlayerMessage from '../types/PlayerMessage';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -16,6 +17,7 @@ export default class CoveyTownController {
   get capacity(): number {
     return this._capacity;
   }
+
   set isPubliclyListed(value: boolean) {
     this._isPubliclyListed = value;
   }
@@ -33,7 +35,7 @@ export default class CoveyTownController {
   }
 
   get occupancy(): number {
-    return this._listeners.length;
+    return this._listeners.size;
   }
 
   get friendlyName(): string {
@@ -57,8 +59,10 @@ export default class CoveyTownController {
   /** The videoClient that this CoveyTown will use to provision video resources * */
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
+  // TODO: see townSubscriptionHandler for change explanation regarding list change to key value pair map
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
-  private _listeners: CoveyTownListener[] = [];
+  // private _listeners: CoveyTownListener[] = [];
+  private _listeners: Map<string, CoveyTownListener> = new Map();
 
   private readonly _coveyTownID: string;
 
@@ -70,12 +74,18 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
+  private readonly publicChat: PlayerMessage[];
+
+  private readonly privateChats: Map<string, Array<{ userProfileIds: string[], messages: PlayerMessage[] }>>;
+
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
     this._capacity = 50;
     this._townUpdatePassword = nanoid(24);
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
+    this.privateChats = new Map();
+    this.publicChat = [];
   }
 
   /**
@@ -124,10 +134,11 @@ export default class CoveyTownController {
    * Subscribe to events from this town. Callers should make sure to
    * unsubscribe when they no longer want those events by calling removeTownListener
    *
-   * @param listener New listener
+   * @param listener the listener for the user
+   * @param userId the id to key the listener by
    */
-  addTownListener(listener: CoveyTownListener): void {
-    this._listeners.push(listener);
+  addTownListener(listener: CoveyTownListener, userId: string): void {
+    this._listeners.set(userId, listener);
   }
 
   /**
@@ -137,6 +148,7 @@ export default class CoveyTownController {
    * with addTownListener, or otherwise will be a no-op
    */
   removeTownListener(listener: CoveyTownListener): void {
+    // TODO FIX THIS TO FILTER A MAP!
     this._listeners = this._listeners.filter((v) => v !== listener);
   }
 
@@ -152,5 +164,9 @@ export default class CoveyTownController {
 
   disconnectAllPlayers(): void {
     this._listeners.forEach((listener) => listener.onTownDestroyed());
+  }
+
+  sendMessage(message: PlayerMessage): void {
+    this._listeners.forEach(listener => listener.onPlayerMessage(message));
   }
 }

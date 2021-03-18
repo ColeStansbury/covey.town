@@ -37,13 +37,17 @@ export default function TownSelection({doLogin}: TownSelectionProps): JSX.Elemen
   const {connect} = useVideoContext();
   const {apiClient} = useCoveyAppState();
   const toast = useToast();
+
   useEffect(() => {
-    const interval = setInterval(() =>
-      apiClient.listTowns()
+      const getTowns = async () => apiClient.listTowns()
         .then(res => setTowns(res.towns.sort((a, b) =>
-          b.currentOccupancy - a.currentOccupancy))), 2000);
-    return () => clearInterval(interval)
-  }, [towns, apiClient]);
+          b.currentOccupancy - a.currentOccupancy)));
+      getTowns().then(r => r);
+      const interval = setInterval(() => getTowns(), 2000);
+      return () => clearInterval(interval);
+    },
+    [apiClient]);
+
   /**
    * A method to validate a given property and return true that it is valid or notify the client
    * and return false that it is invalid.

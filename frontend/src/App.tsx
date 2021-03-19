@@ -24,7 +24,7 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import {Callback} from './components/VideoCall/VideoFrontend/types';
 import Player, {ServerPlayer, UserLocation} from './classes/Player';
-import {PlayerMessage} from "./classes/PlayerMessage";
+import PlayerMessage from "./classes/PlayerMessage";
 import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatBox from "./components/Chat/chat-box";

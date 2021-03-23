@@ -1,28 +1,34 @@
 import React from "react";
-import {Button, Grid, InputLabel, MenuItem, Select, TextField} from "@material-ui/core";
+import {Button, Grid, InputLabel, ListItem, ListItemText, MenuItem, Select, TextField, Typography} from "@material-ui/core";
 import '../../App.css';
 import {makeStyles, createStyles} from "@material-ui/styles";
 
 
-// const styles = () => createStyles({
-//   root: {
-//
-//   },
-//   chatbox: {
-//     position: 'absolute',
-//     top: 0,
-//     right: 0,
-//     bottom: '50vh',
-//   }
-// });
-//
-// interface Props extends WithStyles<typeof styles> {
-//   classes: {
-//     root: string;
-//     chatbox: string;
-//   }
-// }
+const useStyles = makeStyles({
+  root: {
 
+  },
+  chatbox: {
+    position: 'absolute',
+    top: '2%',
+    right: '2%',
+    bottom: '50vh',
+  }
+});
+//  dummy data- to be replaced later
+const messages =  [{
+  content: "TEST",
+  _senderProfileId: 0,
+  _recipient: "EEE7FD95",
+  date: new Date()
+    },
+  {
+    content: "TEST",
+    _senderProfileId: 0,
+    _recipient: "EEE7FD95",
+    date: new Date()
+  }
+]
 
 
 //  look up jss
@@ -31,12 +37,11 @@ import {makeStyles, createStyles} from "@material-ui/styles";
 const ChatBox = (): JSX.Element => {
 
 
-  // const classes = useStyles
+  const classes = useStyles();
 
   return (
-    // <Grid className={classes.chatbox}>
-    <Grid className="chatbox">
-    <Grid className="form-group row">
+    <Grid className={classes.chatbox}>
+    <Grid direction="row">
         <InputLabel id="playerChatSelection">Select A Player</InputLabel>
         <Select labelId="playerChatSelection">
           {/* Will map players in room here */}
@@ -47,6 +52,11 @@ const ChatBox = (): JSX.Element => {
       <Grid className="messageWindow">
         {/*  Actual messages would go here */}
         {/* map messages here- ternary? popular function- clsx- space delimiter */}
+        {/* TODO: get name from sender profile */}
+        {messages.map((message, i) => <Grid key={message.date.toDateString()}>
+          <ListItem>{message._senderProfileId}</ListItem>
+          <ListItemText>{message.content}</ListItemText>
+          </Grid>)}
 
       </Grid>
       <Grid>

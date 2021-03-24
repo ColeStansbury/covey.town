@@ -35,7 +35,7 @@ type CoveyAppUpdate =
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
   | { action: 'weMoved'; location: UserLocation }
-  | { action: 'playerMessages'; messages: PlayerMessage[] }
+  | { action: 'playerMessage'; message: PlayerMessage }
   | { action: 'disconnect' }
   ;
 
@@ -155,8 +155,8 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
       break;
-    case 'playerMessages':
-      nextState.messages = update.messages;
+    case 'playerMessage':
+      nextState.messages.push(update.message);
       break;
     case 'disconnect':
       state.socket?.disconnect();
@@ -187,8 +187,8 @@ async function GameController(initData: TownJoinResponse,
       player: Player.fromServerPlayer(player),
     });
   });
-  socket.on('receivePlayerMessages', (messages: PlayerMessage[]) => {
-    dispatchAppUpdate({action: 'playerMessages', messages});
+  socket.on('receivePlayerMessage', (message: PlayerMessage) => {
+    dispatchAppUpdate({action: 'playerMessage', message});
   });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
@@ -201,8 +201,8 @@ async function GameController(initData: TownJoinResponse,
   socket.on('disconnect', () => {
     dispatchAppUpdate({action: 'disconnect'});
   });
-  const emitMessage = (messages: PlayerMessage[]) => {
-    socket.emit('sendPlayerMessages', messages);
+  const emitMessage = (message: PlayerMessage) => {
+    socket.emit('sendPlayerMessage', message);
   };
 
   const emitMovement = (location: UserLocation) => {

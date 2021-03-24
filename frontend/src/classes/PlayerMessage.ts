@@ -20,7 +20,6 @@ export default class PlayerMessage {
 
   private _content: string;
 
-
   private readonly _senderProfileId: string;
 
   private readonly _senderName: string;

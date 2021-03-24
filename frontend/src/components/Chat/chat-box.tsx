@@ -30,13 +30,13 @@ const useStyles = makeStyles({
 const messageList = [{
   content: "TEST",
   _senderProfileId: 0,
-  _recipient: "EEE7FD95",
+  _recipient: "2DA11483",
   date: new Date()
 },
   {
     content: "TEST",
     _senderProfileId: 0,
-    _recipient: "EEE7FD95",
+    _recipient: "2DA11483",
     date: new Date()
   }
 ]

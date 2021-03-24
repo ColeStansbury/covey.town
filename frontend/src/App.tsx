@@ -43,6 +43,18 @@ function defaultAppState(): CoveyAppState {
   return {
     nearbyPlayers: {nearbyPlayers: []},
     players: [],
+    messages: [
+      new PlayerMessage(
+        'some content',
+        'someId',
+        'town',
+        'UNICORN'),
+      new PlayerMessage(
+        'some other content',
+        'someOtherId',
+        'town',
+        'ANOTHER_UNICORN')
+    ],
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -65,6 +77,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     currentTownFriendlyName: state.currentTownFriendlyName,
     currentTownID: state.currentTownID,
     currentTownIsPubliclyListed: state.currentTownIsPubliclyListed,
+    messages: state.messages,
     myPlayerID: state.myPlayerID,
     players: state.players,
     currentLocation: state.currentLocation,
@@ -142,6 +155,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
         nextState.nearbyPlayers = state.nearbyPlayers;
       }
       break;
+    case 'playerMessage':
+      nextState.messages.push(update.message);
+      break;
     case 'disconnect':
       state.socket?.disconnect();
       return defaultAppState();
@@ -172,9 +188,7 @@ async function GameController(initData: TownJoinResponse,
     });
   });
   socket.on('receivePlayerMessage', (message: PlayerMessage) => {
-    if (message.senderProfileId !== gamePlayerID) {
-      dispatchAppUpdate({action: 'playerMessage', message});
-    }
+    dispatchAppUpdate({action: 'playerMessage', message});
   });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {

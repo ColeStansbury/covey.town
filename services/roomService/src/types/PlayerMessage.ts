@@ -33,8 +33,8 @@ export default class PlayerMessage {
   private readonly _messageId: string;
 
 
-  constructor(senderProfileId: string, senderName: string, content: string, date: Date,
-    recipient: 'town' | { recipientId: string },
+  constructor(senderProfileId: string, senderName: string, content: string,
+              recipient: 'town' | { recipientId: string },
   ) {
     if (senderProfileId === '') {
       throw Error('Sender profile id cannot be empty');
@@ -61,7 +61,6 @@ export default class PlayerMessage {
       playerMessageFromClient._senderProfileId,
       playerMessageFromClient.senderName,
       playerMessageFromClient._content,
-      new Date(playerMessageFromClient.date.getUTCDate()),
       playerMessageFromClient._recipient);
   }
 

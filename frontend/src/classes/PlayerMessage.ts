@@ -17,6 +17,17 @@ export default class PlayerMessage {
     return this._senderProfileId;
   }
 
+  get date(): Date {
+    return this._date;
+  }
+
+  get senderName(): string {
+    return this._senderName;
+  }
+
+  get messageId(): string {
+    return this._messageId;
+  }
 
   private _content: string;
 
@@ -26,16 +37,16 @@ export default class PlayerMessage {
 
   private readonly _recipient: "town" | { recipientId: string };
 
-  private readonly date: Date;
+  private readonly _date: Date;
 
   private readonly _messageId: string;
 
 
-  constructor(content: string, senderProfileId: string, recipient: "town" | { recipientId: string }, senderName: string) {
+  constructor(content: string, senderProfileId: string, recipient: "town" | { recipientId: string }, senderName: string, date: Date) {
     this._content = content;
     this._senderProfileId = senderProfileId;
     this._recipient = recipient;
-    this.date = new Date();
+    this._date = date;
     this._messageId = nanoid();
     this._senderName = senderName;
   }

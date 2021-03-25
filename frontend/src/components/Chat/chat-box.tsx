@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {
   Box,
-  Button,
   Fab,
   Grid,
   InputLabel,
@@ -10,11 +9,13 @@ import {
   MenuItem,
   Select,
   TextField,
-  Typography
 } from "@material-ui/core";
+import {nanoid} from 'nanoid';
 import '../../App.css';
-import {makeStyles, createStyles} from "@material-ui/styles";
+import {makeStyles} from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
+import useCoveyAppState from "../../hooks/useCoveyAppState";
+import PlayerMessage from "../../classes/PlayerMessage";
 
 
 const useStyles = makeStyles({
@@ -26,57 +27,26 @@ const useStyles = makeStyles({
     bottom: '50vh',
   }
 });
-//  dummy data- to be replaced later
-const messageList = [{
-  content: "TEST",
-  _senderProfileId: 0,
-  _recipient: "2DA11483",
-  date: new Date()
-},
-  {
-    content: "TEST",
-    _senderProfileId: 0,
-    _recipient: "2DA11483",
-    date: new Date()
-  }
-]
 
 
 //  look up jss
 //  look up default breakpoint
 //  can do inline hover styling
 const ChatBox = (): JSX.Element => {
-  const [messages, setMessages] = useState(messageList)
-  const [newMessage, setNewMessage] = useState<string>('')
+  const [newText, setNewText] = useState<string>('')
   const classes = useStyles();
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  useEffect(() => {
-    const getMessages = () => setMessages(messageList)
+  const {messages, myPlayerID, userName, emitMessage} = useCoveyAppState();
 
-    getMessages()
-  })
-
-  useEffect(() => {
-    const getMessages = () => setMessages(messageList)
-
-    const refreshTimer = setTimeout(() => {
-      getMessages()
-    }, 100)
-
-    return () => clearTimeout(refreshTimer);
-
-  }, [messages])
+  // useEffect(() => {
+  //
+  // }, [messages, emitMessage])
 
 
-  const sendMessage = async (message: string) => {
-    messageList.push({
-      content: message,
-      _senderProfileId: 0,
-      _recipient: "EEE7FD95",
-      date: new Date()
-    })
+  const sendMessage = async (text: string) => {
+    emitMessage(new PlayerMessage(text, myPlayerID, 'town', userName, new Date()));
   }
 
 
@@ -95,33 +65,27 @@ const ChatBox = (): JSX.Element => {
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
-          {messages.map((message, i) => <Grid key={message.date.toDateString()}>
-              <ListItem>{message._senderProfileId}</ListItem>
+          {messages.map((message) => <Grid key={nanoid()}>
+              <ListItem>{message.senderName}</ListItem>
               <ListItemText>{message.content}</ListItemText>
             </Grid>
           )}
+
 
         </Grid>
         <Grid>
           <TextField
             className="form-control"
             variant="outlined"
-            value={newMessage}
-            onChange={e => setNewMessage(e.target.value)}
+            value={newText}
+            onChange={e => setNewText(e.target.value)}
           />
-          <Fab onClick={() => sendMessage(newMessage)}><SendIcon color="secondary"/></Fab>
+          <Fab onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
         </Grid>
       </Grid>
     </Box>
   )
 
 }
-
-// const ChatBox = (): JSX.Element => (
-
-
-//     <>
-//     </>
-//   );
 
 export default ChatBox;

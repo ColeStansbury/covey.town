@@ -30,7 +30,7 @@ import Video from './classes/Video/Video';
 import ChatBox from "./components/Chat/chat-box";
 
 type CoveyAppUpdate =
-  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void } }
+  | { action: 'doConnect'; data: { userName: string, townFriendlyName: string, townID: string, townIsPubliclyListed: boolean, sessionToken: string, myPlayerID: string, socket: Socket, players: Player[], emitMovement: (location: UserLocation) => void, emitMessage: (message: PlayerMessage) => void } }
   | { action: 'addPlayer'; player: Player }
   | { action: 'playerMoved'; player: Player }
   | { action: 'playerDisconnect'; player: Player }
@@ -48,12 +48,14 @@ function defaultAppState(): CoveyAppState {
         'some content',
         'someId',
         'town',
-        'UNICORN'),
+        'UNICORN',
+        new Date()),
       new PlayerMessage(
         'some other content',
         'someOtherId',
         'town',
-        'ANOTHER_UNICORN')
+        'ANOTHER_UNICORN',
+        new Date())
     ],
     myPlayerID: '',
     currentTownFriendlyName: '',
@@ -66,6 +68,8 @@ function defaultAppState(): CoveyAppState {
       x: 0, y: 0, rotation: 'front', moving: false,
     },
     emitMovement: () => {
+    },
+    emitMessage: () => {
     },
     apiClient: new TownsServiceClient(),
   };
@@ -85,6 +89,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     userName: state.userName,
     socket: state.socket,
     emitMovement: state.emitMovement,
+    emitMessage: state.emitMessage,
     apiClient: state.apiClient,
   };
 
@@ -118,6 +123,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.currentTownIsPubliclyListed = update.data.townIsPubliclyListed;
       nextState.userName = update.data.userName;
       nextState.emitMovement = update.data.emitMovement;
+      nextState.emitMessage = update.data.emitMessage;
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
       break;
@@ -188,7 +194,7 @@ async function GameController(initData: TownJoinResponse,
     });
   });
   socket.on('receivePlayerMessage', (message: PlayerMessage) => {
-    dispatchAppUpdate({action: 'playerMessage', message});
+    dispatchAppUpdate({action: 'playerMessage', message: new PlayerMessage(message.content,message.senderProfileId, message.recipient, message.senderName, message.date)});
   });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
@@ -220,6 +226,7 @@ async function GameController(initData: TownJoinResponse,
       myPlayerID: gamePlayerID,
       townIsPubliclyListed: video.isPubliclyListed,
       emitMovement,
+      emitMessage,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
     },

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Phaser from 'phaser';
-import Player, { UserLocation } from '../../classes/Player';
+import Player, {UserLocation} from '../../classes/Player';
 import Video from '../../classes/Video/Video';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
 
@@ -68,7 +68,7 @@ class CoveyGameScene extends Phaser.Scene {
   updatePlayerLocation(player: Player) {
     let myPlayer = this.players.find((p) => p.id === player.id);
     if (!myPlayer) {
-      let { location } = player;
+      let {location} = player;
       if (!location) {
         location = {
           rotation: 'back',
@@ -81,7 +81,7 @@ class CoveyGameScene extends Phaser.Scene {
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
-      let { sprite } = myPlayer;
+      let {sprite} = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -112,16 +112,16 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   getNewMovementDirection() {
-    if(this.cursors.find(keySet => keySet.left?.isDown)) {
+    if (this.cursors.find(keySet => keySet.left?.isDown)) {
       return 'left';
     }
-    if(this.cursors.find(keySet => keySet.right?.isDown)) {
+    if (this.cursors.find(keySet => keySet.right?.isDown)) {
       return 'right';
     }
-    if(this.cursors.find(keySet => keySet.down?.isDown)) {
+    if (this.cursors.find(keySet => keySet.down?.isDown)) {
       return 'front';
     }
-    if(this.cursors.find(keySet => keySet.up?.isDown)) {
+    if (this.cursors.find(keySet => keySet.up?.isDown)) {
       return 'back';
     }
     return undefined;
@@ -137,7 +137,7 @@ class CoveyGameScene extends Phaser.Scene {
       body.setVelocity(0);
 
       const primaryDirection = this.getNewMovementDirection();
-      switch(primaryDirection){
+      switch (primaryDirection) {
         case 'left':
           body.setVelocityX(-speed);
           this.player.sprite.anims.play('misa-left-walk', true);
@@ -198,7 +198,7 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   create() {
-    const map = this.make.tilemap({ key: 'map' });
+    const map = this.make.tilemap({key: 'map'});
 
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
@@ -209,7 +209,7 @@ class CoveyGameScene extends Phaser.Scene {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const belowLayer = map.createStaticLayer('Below Player', tileset, 0, 0);
     const worldLayer = map.createStaticLayer('World', tileset, 0, 0);
-    worldLayer.setCollisionByProperty({ collides: true });
+    worldLayer.setCollisionByProperty({collides: true});
     const aboveLayer = map.createStaticLayer('Above Player', tileset, 0, 0);
     /* By default, everything gets depth sorted on the screen in the order we created things.
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
@@ -255,7 +255,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Create the player's walking animations from the texture atlas. These are stored in the global
     // animation manager so any sprite can access them.
-    const { anims } = this;
+    const {anims} = this;
     anims.create({
       key: 'misa-left-walk',
       frames: anims.generateFrameNames('atlas', {
@@ -306,8 +306,18 @@ class CoveyGameScene extends Phaser.Scene {
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
     this.cursors.push(this.input.keyboard.createCursorKeys());
-    this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.W,down:Phaser.Input.Keyboard.KeyCodes.S,left:Phaser.Input.Keyboard.KeyCodes.A,right:Phaser.Input.Keyboard.KeyCodes.D}));
-    this.cursors.push(this.input.keyboard.addKeys({up:Phaser.Input.Keyboard.KeyCodes.H,down:Phaser.Input.Keyboard.KeyCodes.J,left:Phaser.Input.Keyboard.KeyCodes.K,right:Phaser.Input.Keyboard.KeyCodes.L}));
+    this.cursors.push(this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    }));
+    this.cursors.push(this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.H,
+      down: Phaser.Input.Keyboard.KeyCodes.J,
+      left: Phaser.Input.Keyboard.KeyCodes.K,
+      right: Phaser.Input.Keyboard.KeyCodes.L
+    }));
 
     // Help text that has a "fixed" position on the screen
     this.add
@@ -347,7 +357,7 @@ export default function WorldMap(): JSX.Element {
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 0 }, // Top down game, so no gravity
+          gravity: {y: 0}, // Top down game, so no gravity
         },
       },
     };

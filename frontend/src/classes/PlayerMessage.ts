@@ -9,7 +9,7 @@ export default class PlayerMessage {
     return this._content;
   }
 
-  get recipient(): "town" | { userProfileIds: string[] } | { userProfileId: string } {
+  get recipient(): "town" | { recipientId: string } {
     return this._recipient;
   }
 
@@ -24,14 +24,14 @@ export default class PlayerMessage {
 
   private readonly _senderName: string;
 
-  private readonly _recipient: "town" | { userProfileIds: string[] } | { userProfileId: string };
+  private readonly _recipient: "town" | { recipientId: string };
 
   private readonly date: Date;
 
   private readonly _messageId: string;
 
 
-  constructor(content: string, senderProfileId: string, recipient: "town" | { userProfileIds: string[] }, senderName: string) {
+  constructor(content: string, senderProfileId: string, recipient: "town" | { recipientId: string }, senderName: string) {
     this._content = content;
     this._senderProfileId = senderProfileId;
     this._recipient = recipient;

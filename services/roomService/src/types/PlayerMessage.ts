@@ -2,6 +2,9 @@ import {nanoid} from 'nanoid';
 
 export default class PlayerMessage {
   set content(value: string) {
+    if (value === '') {
+      throw Error('Content cannot be empty');
+    }
     this._content = value;
   }
 
@@ -9,7 +12,7 @@ export default class PlayerMessage {
     return this._content;
   }
 
-  get recipient(): 'town' | { userProfileIds: string[] } | { userProfileId: string } {
+  get recipient(): 'town' | { recipientId: string } {
     return this._recipient;
   }
 
@@ -23,7 +26,7 @@ export default class PlayerMessage {
 
   private readonly _senderName: string;
 
-  private readonly _recipient: 'town' | { userProfileIds: string[] } | { userProfileId: string };
+  private readonly _recipient: 'town' | { recipientId: string };
 
   private date: Date;
 
@@ -31,12 +34,24 @@ export default class PlayerMessage {
 
 
   constructor(senderProfileId: string, senderName: string, content: string, date: Date,
-    recipient: 'town' | { userProfileIds: string[] } | { userProfileId: string },
+    recipient: 'town' | { recipientId: string },
   ) {
+    if (senderProfileId === '') {
+      throw Error('Sender profile id cannot be empty');
+    }
+    if (senderName === '') {
+      throw Error('Sender name cannot be empty');
+    }
+    if (content === '') {
+      throw Error('Content cannot be empty');
+    }
+    if (typeof recipient === 'object' && recipient.recipientId === '') {
+      throw Error('Recipient id cannot be empty');
+    }
     this._content = content;
     this._senderProfileId = senderProfileId;
     this._recipient = recipient;
-    this.date = date;
+    this.date = new Date(new Date().getUTCDate());
     this._messageId = nanoid();
     this._senderName = senderName;
   }
@@ -56,5 +71,5 @@ export type ClientPlayerMessage = {
   _content: string;
   senderName: string;
   date: Date;
-  _recipient: 'town' | { userProfileIds: string[]; date: Date; } | { userProfileId: string },
+  _recipient: 'town' | { recipientId: string },
 };

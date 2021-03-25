@@ -59,9 +59,7 @@ export default class CoveyTownController {
   /** The videoClient that this CoveyTown will use to provision video resources * */
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
-  // TODO: see townSubscriptionHandler for change explanation regarding list change to key value pair map
   /** The list of CoveyTownListeners that are subscribed to events in this town * */
-  // private _listeners: CoveyTownListener[] = [];
   private _listeners: Map<string, CoveyTownListener> = new Map();
 
   private readonly _coveyTownID: string;
@@ -74,9 +72,9 @@ export default class CoveyTownController {
 
   private _capacity: number;
 
-  private readonly publicChat: PlayerMessage[];
+  private readonly townChat: PlayerMessage[];
 
-  private readonly privateChats: Map<string, Array<{ userProfileIds: string[], messages: PlayerMessage[] }>>;
+  private readonly privateChats: Map<string, Array<{ recipientId: string, messages: PlayerMessage[] }>>;
 
   constructor(friendlyName: string, isPubliclyListed: boolean) {
     this._coveyTownID = (process.env.DEMO_TOWN_ID === friendlyName ? friendlyName : friendlyNanoID());
@@ -85,7 +83,7 @@ export default class CoveyTownController {
     this._isPubliclyListed = isPubliclyListed;
     this._friendlyName = friendlyName;
     this.privateChats = new Map();
-    this.publicChat = [];
+    this.townChat = [];
   }
 
   /**
@@ -148,8 +146,7 @@ export default class CoveyTownController {
    * with addTownListener, or otherwise will be a no-op
    */
   removeTownListener(listener: CoveyTownListener): void {
-    // TODO FIX THIS TO FILTER A MAP!
-    this._listeners = this._listeners.filter((v) => v !== listener);
+    this._listeners.forEach((v, k) => v === listener ? this._listeners.delete(k) : null);
   }
 
   /**
@@ -167,6 +164,21 @@ export default class CoveyTownController {
   }
 
   sendMessage(message: PlayerMessage): void {
-    this._listeners.forEach(listener => listener.onPlayerMessage(message));
+    if (this._listeners.get(message.senderProfileId)) {
+      throw new Error('Invalid sender profile id');
+    }
+    let recipientListener: CoveyTownListener | undefined;
+    switch (typeof message.recipient) {
+      case 'object':
+        recipientListener = this._listeners.get(message.recipient.recipientId);
+        if (!recipientListener) {
+          throw new Error('Invalid recipient id');
+        }
+        recipientListener.onPlayerMessage(message);
+        this._listeners.get(message.senderProfileId)?.onPlayerMessage(message);
+        break;
+      default:
+        this._listeners.forEach(listener => listener.onPlayerMessage(message));
+    }
   }
 }

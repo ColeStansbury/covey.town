@@ -80,7 +80,6 @@ const ChatBox = (): JSX.Element => {
   }
 
 
-
   return (
     <Box color="blue" border={1}>
       <Grid className={classes.chatbox}>

@@ -9,6 +9,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import {nanoid} from 'nanoid';
 import '../../App.css';
@@ -25,20 +26,48 @@ const useStyles = makeStyles({
     position: 'absolute',
     top: '2%',
     right: '2%',
-    bottom: '50vh',
+    // bottom: '70vh',
+    background: '#efe4b1',
+    width: '20vw',
+    height: '70vh',
+    borderRadius: '45px',
+    overflow: 'auto'
+
+  },
+  chatHeader: {
+    textAlign: 'center',
+    background: '#4f4f4f',
+    color:  '#ffffff',
+    borderTopLeftRadius: '45px',
+    borderTopRightRadius: '45px'
+  },
+  messageCreation: {
+    position: 'fixed',
+    bottom: 'flex-end'
   },
   messageWindow: {
-    minHeight: '50vh'
+    // minHeight: '50vh',
+    overflow: 'auto'
+  },
+  messageBorder: {
+    marginLeft: '5px',
+    marginRight: '5px'
   },
   otherPlayerMessage: {
     float: 'left',
     textAlign: 'left'
 
   },
+  otherPlayerMessageName: {
+    color: '#1d2bff'
+  },
   playerMessage: {
-    float: 'right',
-    textAlign: 'right'
-  }
+    alignItems: 'right',
+    textAlign: 'left'
+  },
+  playerMessageName: {
+    color: '#ff0c13'
+  },
 
 });
 
@@ -52,7 +81,7 @@ const ChatBox = (): JSX.Element => {
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  const {messages, myPlayerID, userName, emitMessage} = useCoveyAppState();
+  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName} = useCoveyAppState();
 
   // useEffect(() => {
   //
@@ -60,6 +89,10 @@ const ChatBox = (): JSX.Element => {
 
 
   const sendMessage = async (text: string) => {
+    //  fixes bug that crashes server
+    if (text.length === 0) {
+      return;
+    }
     emitMessage(new PlayerMessage(
       '',
       myPlayerID,
@@ -68,12 +101,15 @@ const ChatBox = (): JSX.Element => {
       'town',
       new Date(),
     ));
+    setNewText('')
   }
   const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
+  const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
 
   return (
-    <Box color="blue" border={1}>
+    <Box border={1}>
       <Grid className={classes.chatbox}>
+        <Typography variant='h4' className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
         <Grid direction="row">
           <InputLabel id="playerChatSelection">Select A Player</InputLabel>
           <Select labelId="playerChatSelection">
@@ -82,25 +118,25 @@ const ChatBox = (): JSX.Element => {
             <MenuItem>Dummy Player Data 2</MenuItem>
           </Select>
         </Grid>
-        <Grid className="messageWindow">
+        <Grid className={classes.messageWindow} direction="column" container >
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
           {/* {console.log(messages)} */}
           {messages.map((message) =>
             // console.log(message);
-            (<Grid key={message.messageId} container className={checkSender(message.senderProfileId)}>
-              <ListItem>{message.senderName}</ListItem>
-              <ListItemText>{message.content}</ListItemText>
+            (<Grid key={message.messageId} className={checkSender(message.senderProfileId)}>
+              <ListItem className={checkSenderName(message.senderProfileId)}>{message.senderName}</ListItem>
+              <Typography className={classes.messageBorder}>{message.content}</Typography>
             </Grid>)
           )
           }
 
 
         </Grid>
-        <Grid>
+        <Grid className={classes.messageCreation}>
           <TextField
-            className="form-control"
+
             variant="outlined"
             value={newText}
             onChange={e => setNewText(e.target.value)}

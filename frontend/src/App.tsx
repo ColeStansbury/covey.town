@@ -213,7 +213,6 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'disconnect'});
   });
   const emitMessage = (message: PlayerMessage) => {
-    console.log(message);
     socket.emit('sendPlayerMessage', message);
   };
 

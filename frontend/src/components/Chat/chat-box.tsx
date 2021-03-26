@@ -18,6 +18,7 @@ import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
 
 
+
 const useStyles = makeStyles({
   root: {},
   chatbox: {
@@ -25,7 +26,20 @@ const useStyles = makeStyles({
     top: '2%',
     right: '2%',
     bottom: '50vh',
+  },
+  messageWindow: {
+    minHeight: '50vh'
+  },
+  otherPlayerMessage: {
+    float: 'left',
+    textAlign: 'left'
+
+  },
+  playerMessage: {
+    float: 'right',
+    textAlign: 'right'
   }
+
 });
 
 
@@ -55,7 +69,7 @@ const ChatBox = (): JSX.Element => {
       new Date(),
     ));
   }
-
+  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
 
   return (
     <Box color="blue" border={1}>
@@ -75,7 +89,7 @@ const ChatBox = (): JSX.Element => {
           {/* {console.log(messages)} */}
           {messages.map((message) =>
             // console.log(message);
-             (<Grid key={message.messageId}>
+            (<Grid key={message.messageId} container className={checkSender(message.senderProfileId)}>
               <ListItem>{message.senderName}</ListItem>
               <ListItemText>{message.content}</ListItemText>
             </Grid>)

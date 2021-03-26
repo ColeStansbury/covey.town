@@ -24,7 +24,7 @@ import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDi
 import theme from './components/VideoCall/VideoFrontend/theme';
 import {Callback} from './components/VideoCall/VideoFrontend/types';
 import Player, {ServerPlayer, UserLocation} from './classes/Player';
-import PlayerMessage from "./classes/PlayerMessage";
+import PlayerMessage, {ServerMessage} from "./classes/PlayerMessage";
 import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatBox from "./components/Chat/chat-box";
@@ -45,17 +45,19 @@ function defaultAppState(): CoveyAppState {
     players: [],
     messages: [
       new PlayerMessage(
-        'some content',
+        '1234',
         'someId',
-        'town',
         'UNICORN',
+        'some content',
+        'town',
         new Date()),
       new PlayerMessage(
-        'some other content',
-        'someOtherId',
-        'town',
+        '1234567890ABCDEF',
+        'AnotherId',
         'ANOTHER_UNICORN',
-        new Date())
+        'some content',
+        'town',
+        new Date()),
     ],
     myPlayerID: '',
     currentTownFriendlyName: '',
@@ -193,8 +195,11 @@ async function GameController(initData: TownJoinResponse,
       player: Player.fromServerPlayer(player),
     });
   });
-  socket.on('receivePlayerMessage', (message: PlayerMessage) => {
-    dispatchAppUpdate({action: 'playerMessage', message: new PlayerMessage(message.content,message.senderProfileId, message.recipient, message.senderName, message.date)});
+  socket.on('receivePlayerMessage', (serverMessage: ServerMessage) => {
+    dispatchAppUpdate({
+      action: 'playerMessage',
+      message: PlayerMessage.fromServerMessage(serverMessage),
+    });
   });
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
@@ -208,6 +213,7 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'disconnect'});
   });
   const emitMessage = (message: PlayerMessage) => {
+    console.log(message);
     socket.emit('sendPlayerMessage', message);
   };
 

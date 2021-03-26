@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {
   Box,
   Fab,
@@ -46,7 +46,14 @@ const ChatBox = (): JSX.Element => {
 
 
   const sendMessage = async (text: string) => {
-    emitMessage(new PlayerMessage(text, myPlayerID, 'town', userName, new Date()));
+    emitMessage(new PlayerMessage(
+      '',
+      myPlayerID,
+      userName,
+      text,
+      'town',
+      new Date(),
+    ));
   }
 
 
@@ -65,11 +72,15 @@ const ChatBox = (): JSX.Element => {
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
-          {messages.map((message) => <Grid key={nanoid()}>
+          {/* {console.log(messages)} */}
+          {messages.map((message) =>
+            // console.log(message);
+             (<Grid key={message.messageId}>
               <ListItem>{message.senderName}</ListItem>
               <ListItemText>{message.content}</ListItemText>
-            </Grid>
-          )}
+            </Grid>)
+          )
+          }
 
 
         </Grid>

@@ -4,7 +4,7 @@ import Player from '../types/Player';
 import {CoveyTownList, UserLocation} from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
-import PlayerMessage from '../types/PlayerMessage';
+import PlayerMessage, {ClientPlayerMessage} from '../types/PlayerMessage';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -239,7 +239,7 @@ export function townSubscriptionHandler(socket: Socket): void {
     townController.updatePlayerLocation(playerSession.player, movementData);
   });
 
-  socket.on('sendPlayerMessage', (message: PlayerMessage) => {
-    townController.sendMessage(message);
+  socket.on('sendPlayerMessage', (message: ClientPlayerMessage) => {
+    townController.sendMessage(PlayerMessage.fromClientPlayerMessage(message));
   });
 }

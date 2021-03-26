@@ -28,13 +28,16 @@ export default class PlayerMessage {
 
   private readonly _recipient: 'town' | { recipientId: string };
 
-  private date: Date;
+  private _date: Date;
 
   private readonly _messageId: string;
 
 
-  constructor(senderProfileId: string, senderName: string, content: string,
-              recipient: 'town' | { recipientId: string },
+  constructor(
+    senderProfileId: string,
+    senderName: string,
+    content: string,
+    recipient: 'town' | { recipientId: string },
   ) {
     if (senderProfileId === '') {
       throw Error('Sender profile id cannot be empty');
@@ -48,27 +51,28 @@ export default class PlayerMessage {
     if (typeof recipient === 'object' && recipient.recipientId === '') {
       throw Error('Recipient id cannot be empty');
     }
-    this._content = content;
-    this._senderProfileId = senderProfileId;
-    this._recipient = recipient;
-    this.date = new Date(new Date().getUTCDate());
     this._messageId = nanoid();
+    this._senderProfileId = senderProfileId;
     this._senderName = senderName;
+    this._content = content;
+    this._recipient = recipient;
+    this._date = new Date(new Date().getUTCDate());
   }
 
   static fromClientPlayerMessage(playerMessageFromClient: ClientPlayerMessage): PlayerMessage {
     return new PlayerMessage(
       playerMessageFromClient._senderProfileId,
-      playerMessageFromClient.senderName,
+      playerMessageFromClient._senderName,
       playerMessageFromClient._content,
       playerMessageFromClient._recipient);
   }
 
 }
 export type ClientPlayerMessage = {
-  _senderProfileId: string;
-  _content: string;
-  senderName: string;
-  date: Date;
+  _messageId: string,
+  _senderProfileId: string,
+  _senderName: string,
+  _content: string,
   _recipient: 'town' | { recipientId: string },
+  _date: Date,
 };

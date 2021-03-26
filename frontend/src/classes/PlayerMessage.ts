@@ -1,4 +1,5 @@
 import {nanoid} from "nanoid";
+import {ServerPlayer} from "./Player";
 
 export default class PlayerMessage {
   set content(value: string) {
@@ -42,12 +43,40 @@ export default class PlayerMessage {
   private readonly _messageId: string;
 
 
-  constructor(content: string, senderProfileId: string, recipient: "town" | { recipientId: string }, senderName: string, date: Date) {
-    this._content = content;
+  constructor(
+    messageId: string,
+    senderProfileId: string,
+    senderName: string,
+    content: string,
+    recipient: "town" | { recipientId: string },
+    date: Date,
+  ) {
+    this._messageId = messageId;
     this._senderProfileId = senderProfileId;
+    this._senderName = senderName;
+    this._content = content;
     this._recipient = recipient;
     this._date = date;
-    this._messageId = nanoid();
-    this._senderName = senderName;
   }
+
+
+  static fromServerMessage(messageFromServer: ServerMessage): PlayerMessage {
+    return new PlayerMessage(
+      messageFromServer._messageId,
+      messageFromServer._senderProfileId,
+      messageFromServer._senderName,
+      messageFromServer._content,
+      messageFromServer._recipient,
+      messageFromServer._date,
+    );
+  }
+}
+
+export type ServerMessage = {
+  _messageId: string,
+  _senderProfileId: string,
+  _senderName: string,
+  _content: string,
+  _recipient: "town" | { recipientId: string },
+  _date: Date,
 }

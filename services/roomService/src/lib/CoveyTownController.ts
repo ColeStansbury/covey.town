@@ -164,7 +164,7 @@ export default class CoveyTownController {
   }
 
   sendMessage(message: PlayerMessage): void {
-    if (this._listeners.get(message.senderProfileId)) {
+    if (!this._listeners.get(message.senderProfileId)) {
       throw new Error('Invalid sender profile id');
     }
     let recipientListener: CoveyTownListener | undefined;

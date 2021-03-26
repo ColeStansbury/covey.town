@@ -29,9 +29,9 @@ const useStyles = makeStyles({
     // bottom: '70vh',
     background: '#efe4b1',
     width: '20vw',
-    height: '70vh',
+    height: '71vh',
     borderRadius: '45px',
-    overflow: 'auto',
+    // overflow: 'auto',
     scrollbarGutter: '10px'
 
   },
@@ -42,16 +42,21 @@ const useStyles = makeStyles({
     borderTopLeftRadius: '45px',
     borderTopRightRadius: '45px'
   },
+  fabIcon: {
+    // width: '20%'
+  },
   formControl: {
 
   },
   messageCreation: {
-
-    bottom: 'flex-end'
+    justifyContent: 'between',
+    float: 'right',
+    top: 'flex-end'
   },
   messageWindow: {
-    // minHeight: '50vh',
-    overflow: 'auto'
+    height: '55vh',
+    overflow: 'auto',
+    flexWrap: 'nowrap'
   },
   messageBorder: {
     marginLeft: '5px',
@@ -72,6 +77,9 @@ const useStyles = makeStyles({
   playerMessageName: {
     color: '#ff0c13'
   },
+  textField: {
+    width: '80%'
+  }
 
 });
 
@@ -113,10 +121,16 @@ const ChatBox = (): JSX.Element => {
   return (
     <Box border={1}>
       <Grid className={classes.chatbox}>
-        <Typography variant='h4' className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        <Grid className={classes.formControl} direction="row">
-          <InputLabel id="playerChatSelection">Select A Player</InputLabel>
-          <Select labelId="playerChatSelection">
+        <Typography
+          variant='h4'
+          className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
+        <Grid
+          className={classes.formControl}
+          direction="row">
+          <InputLabel
+            id="playerChatSelection">Select A Player</InputLabel>
+          <Select
+            labelId="playerChatSelection">
             {/* Will map players in room here */}
             {players.map((player) =>
               <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
@@ -130,23 +144,30 @@ const ChatBox = (): JSX.Element => {
           {/* {console.log(messages)} */}
           {messages.map((message) =>
             // console.log(message);
-            (<Grid key={message.messageId} className={checkSender(message.senderProfileId)}>
-              <ListItem className={checkSenderName(message.senderProfileId)}>{message.senderName}</ListItem>
-              <Typography className={classes.messageBorder}>{message.content}</Typography>
+            (<Grid
+              key={message.messageId}
+              className={checkSender(message.senderProfileId)}>
+              <ListItem
+                className={checkSenderName(message.senderProfileId)}>{message.senderName}</ListItem>
+              <Typography
+                className={classes.messageBorder}>{message.content}</Typography>
             </Grid>)
           )
           }
 
 
         </Grid>
-        <Grid className={classes.messageCreation}>
+        <Grid container className={classes.messageCreation}>
           <TextField
-
-            variant="outlined"
+            className={classes.textField}
+            // multiline
+            variant="filled"
             value={newText}
             onChange={e => setNewText(e.target.value)}
           />
-          <Fab onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
+          <Fab
+            className={classes.fabIcon}
+            onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
         </Grid>
       </Grid>
     </Box>

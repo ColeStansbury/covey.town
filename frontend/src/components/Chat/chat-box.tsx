@@ -31,7 +31,8 @@ const useStyles = makeStyles({
     width: '20vw',
     height: '70vh',
     borderRadius: '45px',
-    overflow: 'auto'
+    overflow: 'auto',
+    scrollbarGutter: '10px'
 
   },
   chatHeader: {
@@ -41,8 +42,11 @@ const useStyles = makeStyles({
     borderTopLeftRadius: '45px',
     borderTopRightRadius: '45px'
   },
+  formControl: {
+
+  },
   messageCreation: {
-    position: 'fixed',
+
     bottom: 'flex-end'
   },
   messageWindow: {
@@ -81,7 +85,7 @@ const ChatBox = (): JSX.Element => {
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName} = useCoveyAppState();
+  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName, players} = useCoveyAppState();
 
   // useEffect(() => {
   //
@@ -110,12 +114,13 @@ const ChatBox = (): JSX.Element => {
     <Box border={1}>
       <Grid className={classes.chatbox}>
         <Typography variant='h4' className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        <Grid direction="row">
+        <Grid className={classes.formControl} direction="row">
           <InputLabel id="playerChatSelection">Select A Player</InputLabel>
           <Select labelId="playerChatSelection">
             {/* Will map players in room here */}
-            <MenuItem>Dummy Player Data 1</MenuItem>
-            <MenuItem>Dummy Player Data 2</MenuItem>
+            {players.map((player) =>
+              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
+            )}
           </Select>
         </Grid>
         <Grid className={classes.messageWindow} direction="column" container >

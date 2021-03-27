@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {
   Box,
   Fab,
+  FormGroup,
   Grid,
   InputLabel,
   ListItem,
@@ -124,9 +125,10 @@ const ChatBox = (): JSX.Element => {
         <Typography
           variant='h4'
           className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        <Grid
+        <FormGroup
+          row
           className={classes.formControl}
-          direction="row">
+          >
           <InputLabel
             id="playerChatSelection">Select A Player</InputLabel>
           <Select
@@ -136,7 +138,7 @@ const ChatBox = (): JSX.Element => {
               <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
             )}
           </Select>
-        </Grid>
+        </FormGroup>
         <Grid className={classes.messageWindow} direction="column" container >
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}

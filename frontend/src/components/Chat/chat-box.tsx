@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {
   Box,
   Fab,
+  FormGroup,
   Grid,
   InputLabel,
   ListItem,
@@ -9,6 +10,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import {nanoid} from 'nanoid';
 import '../../App.css';
@@ -18,14 +20,68 @@ import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
 
 
+
 const useStyles = makeStyles({
   root: {},
   chatbox: {
     position: 'absolute',
     top: '2%',
     right: '2%',
-    bottom: '50vh',
+    // bottom: '70vh',
+    background: '#efe4b1',
+    width: '20vw',
+    height: '71vh',
+    borderRadius: '45px',
+    // overflow: 'auto',
+    scrollbarGutter: '10px'
+
+  },
+  chatHeader: {
+    textAlign: 'center',
+    background: '#4f4f4f',
+    color:  '#ffffff',
+    borderTopLeftRadius: '45px',
+    borderTopRightRadius: '45px'
+  },
+  fabIcon: {
+    // width: '20%'
+  },
+  formControl: {
+
+  },
+  messageCreation: {
+    justifyContent: 'between',
+    float: 'right',
+    top: 'flex-end'
+  },
+  messageWindow: {
+    height: '55vh',
+    overflow: 'auto',
+    flexWrap: 'nowrap'
+  },
+  messageBorder: {
+    marginLeft: '5px',
+    marginRight: '5px'
+  },
+  otherPlayerMessage: {
+    float: 'left',
+    textAlign: 'left'
+
+  },
+  otherPlayerMessageName: {
+    color: '#1d2bff'
+  },
+  playerMessage: {
+    alignItems: 'right',
+    textAlign: 'left'
+  },
+  playerMessageName: {
+    color: '#ff0c13'
+  },
+  textField: {
+    width: '80%'
   }
+
 });
 
 
@@ -38,7 +94,7 @@ const ChatBox = (): JSX.Element => {
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  const {messages, myPlayerID, userName, emitMessage} = useCoveyAppState();
+  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName, players} = useCoveyAppState();
 
   // useEffect(() => {
   //
@@ -46,6 +102,10 @@ const ChatBox = (): JSX.Element => {
 
 
   const sendMessage = async (text: string) => {
+    //  fixes bug that crashes server
+    if (text.length === 0) {
+      return;
+    }
     emitMessage(new PlayerMessage(
       '',
       myPlayerID,
@@ -54,44 +114,62 @@ const ChatBox = (): JSX.Element => {
       'town',
       new Date(),
     ));
+    setNewText('')
   }
-
+  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
+  const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
 
   return (
-    <Box color="blue" border={1}>
+    <Box border={1}>
       <Grid className={classes.chatbox}>
-        <Grid direction="row">
-          <InputLabel id="playerChatSelection">Select A Player</InputLabel>
-          <Select labelId="playerChatSelection">
+        <Typography
+          variant='h4'
+          className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
+        <FormGroup
+          row
+          className={classes.formControl}
+          >
+          <InputLabel
+            id="playerChatSelection">Select A Player</InputLabel>
+          <Select
+            labelId="playerChatSelection">
             {/* Will map players in room here */}
-            <MenuItem>Dummy Player Data 1</MenuItem>
-            <MenuItem>Dummy Player Data 2</MenuItem>
+            {players.map((player) =>
+              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
+            )}
           </Select>
-        </Grid>
-        <Grid className="messageWindow">
+        </FormGroup>
+        <Grid className={classes.messageWindow} direction="column" container >
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
           {/* {console.log(messages)} */}
           {messages.map((message) =>
             // console.log(message);
-             (<Grid key={message.messageId}>
-              <ListItem>{message.senderName}</ListItem>
-              <ListItemText>{message.content}</ListItemText>
+            (<Grid
+              key={message.messageId}
+              className={checkSender(message.senderProfileId)}>
+              <ListItem
+                className={checkSenderName(message.senderProfileId)}>{message.senderName}</ListItem>
+              <Typography
+                className={classes.messageBorder}>{message.content}</Typography>
             </Grid>)
           )
           }
 
 
         </Grid>
-        <Grid>
+        <Grid container className={classes.messageCreation}>
           <TextField
-            className="form-control"
-            variant="outlined"
+            className={classes.textField}
+            // multiline
+            variant="filled"
             value={newText}
             onChange={e => setNewText(e.target.value)}
           />
-          <Fab onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
+          <Fab
+            className={classes.fabIcon}
+            onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>
         </Grid>
       </Grid>
     </Box>

@@ -240,6 +240,8 @@ export function townSubscriptionHandler(socket: Socket): void {
   });
 
   socket.on('sendPlayerMessage', (message: ClientPlayerMessage) => {
+    console.log(message);
+
     townController.sendMessage(PlayerMessage.fromClientPlayerMessage(message));
   });
 }

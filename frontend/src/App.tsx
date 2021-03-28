@@ -164,7 +164,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       }
       break;
     case 'playerMessage':
-      nextState.messages.push(update.message);
+      nextState.messages = [...state.messages, update.message];
       break;
     case 'disconnect':
       state.socket?.disconnect();

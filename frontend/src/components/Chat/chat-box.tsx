@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Fab,
@@ -20,7 +20,6 @@ import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
 
 
-
 const useStyles = makeStyles({
   root: {},
   chatbox: {
@@ -39,16 +38,14 @@ const useStyles = makeStyles({
   chatHeader: {
     textAlign: 'center',
     background: '#4f4f4f',
-    color:  '#ffffff',
+    color: '#ffffff',
     borderTopLeftRadius: '45px',
     borderTopRightRadius: '45px'
   },
   fabIcon: {
     // width: '20%'
   },
-  formControl: {
-
-  },
+  formControl: {},
   messageCreation: {
     justifyContent: 'between',
     float: 'right',
@@ -94,11 +91,22 @@ const ChatBox = (): JSX.Element => {
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName, players} = useCoveyAppState();
+  const {
+    messages,
+    myPlayerID,
+    userName,
+    emitMessage,
+    currentTownFriendlyName,
+    players
+  } = useCoveyAppState();
 
+  // let chatBoxParent: HTMLElement | null = null;
   // useEffect(() => {
-  //
-  // }, [messages, emitMessage])
+  //   chatBoxParent = document.getElementById('chat-box-parent');
+  //   if (chatBoxParent) {
+  //     chatBoxParent?.addEventListener('focusin', () => console.log('focused'), true)
+  //   }
+  // }, [chatBoxParent])
 
 
   const sendMessage = async (text: string) => {
@@ -120,30 +128,30 @@ const ChatBox = (): JSX.Element => {
   const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
 
   return (
-    <Box border={1}>
-      <Grid className={classes.chatbox}>
+    <Box
+      border={1}>
+      <Grid id='chat-box-parent' className={classes.chatbox}>
         <Typography
           variant='h4'
           className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        <FormGroup
-          row
-          className={classes.formControl}
-          >
-          <InputLabel
-            id="playerChatSelection">Select A Player</InputLabel>
-          <Select
-            labelId="playerChatSelection">
+        {/* <FormGroup */}
+        {/*  row */}
+        {/*  className={classes.formControl} */}
+        {/* > */}
+        {/*  <InputLabel */}
+        {/*    id="playerChatSelection">Select A Player</InputLabel> */}
+          {/* <Select */}
+          {/*  labelId="playerChatSelection"> */}
             {/* Will map players in room here */}
-            {players.map((player) =>
-              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
-            )}
-          </Select>
-        </FormGroup>
-        <Grid className={classes.messageWindow} direction="column" container >
+            {/* {players.map((player) => */}
+            {/*  <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem> */}
+            {/* )} */}
+          {/* </Select> */}
+        {/* </FormGroup> */}
+        <Grid className={classes.messageWindow} direction="column" container>
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
-          {/* {console.log(messages)} */}
           {messages.map((message) =>
             // console.log(message);
             (<Grid

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState, useEffect} from "react";
 import {
   Box,
   Fab,
@@ -12,12 +12,14 @@ import {
   TextField,
   Typography,
 } from "@material-ui/core";
-import {nanoid} from 'nanoid';
+import { MentionsInput, Mention } from 'react-mentions'
+
 import '../../App.css';
 import {makeStyles} from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
+import MentionUser from "../../classes/MentionUser";
 
 
 const useStyles = makeStyles({
@@ -75,8 +77,11 @@ const useStyles = makeStyles({
   playerMessageName: {
     color: '#ff0c13'
   },
+
   textField: {
-    width: '80%'
+    width: '60%',
+    background: '#efe4b1',
+
   }
 
 });
@@ -88,26 +93,30 @@ const useStyles = makeStyles({
 const ChatBox = (): JSX.Element => {
   const [newText, setNewText] = useState<string>('')
   const classes = useStyles();
+  const [users, setUsers] = useState<MentionUser []>([]);
+
+    // new MentionUser("1", "harshal"),
+    // new MentionUser("2", "cole"),
+    // new MentionUser("3", "thomas"),
+    // new MentionUser("4", "nate")
+
+
+
+
+
+
 
   //  we would use an api call here to get messages, similar to town refresh
   //  api call- would change message state- may not need useEffect. useState and its rerender may be more effective
-  const {
-    messages,
-    myPlayerID,
-    userName,
-    emitMessage,
-    currentTownFriendlyName,
-    players
-  } = useCoveyAppState();
+  const {messages, myPlayerID, userName, emitMessage, currentTownFriendlyName, players} = useCoveyAppState();
 
-  // let chatBoxParent: HTMLElement | null = null;
-  // useEffect(() => {
-  //   chatBoxParent = document.getElementById('chat-box-parent');
-  //   if (chatBoxParent) {
-  //     chatBoxParent?.addEventListener('focusin', () => console.log('focused'), true)
-  //   }
-  // }, [chatBoxParent])
+  useEffect(() => {
 
+  }, [messages, emitMessage])
+
+  useEffect(() => {
+    setUsers(players.map(player => new MentionUser(player.id, player.userName)));
+  },[players])
 
   const sendMessage = async (text: string) => {
     //  fixes bug that crashes server
@@ -143,12 +152,15 @@ const ChatBox = (): JSX.Element => {
           {/* <Select */}
           {/*  labelId="playerChatSelection"> */}
             {/* Will map players in room here */}
-            {/* {players.map((player) => */}
-            {/*  <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem> */}
-            {/* )} */}
-          {/* </Select> */}
-        {/* </FormGroup> */}
-        <Grid className={classes.messageWindow} direction="column" container>
+            {players.map((player) =>
+              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
+            )}
+          </Select>
+        </FormGroup>
+
+
+
+        <Grid className={classes.messageWindow} direction="column" container >
           {/*  Actual messages would go here */}
           {/* map messages here- ternary? popular function- clsx- space delimiter */}
           {/* TODO: get name from sender profile */}
@@ -168,13 +180,22 @@ const ChatBox = (): JSX.Element => {
 
         </Grid>
         <Grid container className={classes.messageCreation}>
-          <TextField
+
+            <MentionsInput className={classes.textField} value={newText} onChange={(e) => setNewText(e.target.value)}>
+              <Mention
+              trigger="@"
+              data={users}
+              markup='@[__display__](__id__)'
+            />
+
+          </MentionsInput>
+          {/* <TextField
             className={classes.textField}
             // multiline
             variant="filled"
             value={newText}
-            onChange={e => setNewText(e.target.value)}
-          />
+            onChange={(e) => checkForMention(e)}
+          /> */}
           <Fab
             className={classes.fabIcon}
             onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>

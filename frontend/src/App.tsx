@@ -25,6 +25,7 @@ import theme from './components/VideoCall/VideoFrontend/theme';
 import {Callback} from './components/VideoCall/VideoFrontend/types';
 import Player, {ServerPlayer, UserLocation} from './classes/Player';
 import PlayerMessage, {ServerMessage} from "./classes/PlayerMessage";
+import PlayerMention, {ServerMentionMessage} from "./classes/PlayerMention";
 import TownsServiceClient, {TownJoinResponse} from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatBox from "./components/Chat/chat-box";
@@ -201,6 +202,12 @@ async function GameController(initData: TownJoinResponse,
       message: PlayerMessage.fromServerMessage(serverMessage),
     });
   });
+
+  socket.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
+    console.log(serverMessage);
+  });
+
+
   socket.on('playerMoved', (player: ServerPlayer) => {
     if (player._id !== gamePlayerID) {
       dispatchAppUpdate({action: 'playerMoved', player: Player.fromServerPlayer(player)});

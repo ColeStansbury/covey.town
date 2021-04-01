@@ -5,6 +5,7 @@ import {CoveyTownList, UserLocation} from '../CoveyTypes';
 import CoveyTownListener from '../types/CoveyTownListener';
 import CoveyTownsStore from '../lib/CoveyTownsStore';
 import PlayerMessage, {ClientPlayerMessage} from '../types/PlayerMessage';
+import PlayerMention, {ClientPlayerMention} from '../types/PlayerMention';
 
 /**
  * The format of a request to join a Town in Covey.Town, as dispatched by the server middleware
@@ -194,6 +195,9 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onPlayerMessage(message: PlayerMessage) {
       socket.emit('receivePlayerMessage', message);
     },
+    onPlayerMention(message: PlayerMention) {
+      socket.emit('receivePlayerMention', message);
+    },
   };
 }
 
@@ -240,8 +244,17 @@ export function townSubscriptionHandler(socket: Socket): void {
   });
 
   socket.on('sendPlayerMessage', (message: ClientPlayerMessage) => {
-    console.log(message);
 
     townController.sendMessage(PlayerMessage.fromClientPlayerMessage(message));
   });
+
+
+  socket.on('sendPlayerMention', (message: ClientPlayerMention) => {
+    console.log('hey', message);
+
+    townController.sendPlayerMention(PlayerMention.fromClientPlayerMention(message));
+  });
+
+  
+
 }

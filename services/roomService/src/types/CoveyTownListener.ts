@@ -1,5 +1,6 @@
 import Player from './Player';
-import PlayerMessage from "./PlayerMessage";
+import PlayerMessage from './PlayerMessage';
+import PlayerMention from './PlayerMention';
 
 /**
  * A listener for player-related events in each town
@@ -29,4 +30,6 @@ export default interface CoveyTownListener {
   onTownDestroyed(): void;
 
   onPlayerMessage(message: PlayerMessage): void;
+
+  onPlayerMention(message:PlayerMention):void;
 }

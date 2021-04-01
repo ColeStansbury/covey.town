@@ -1,7 +1,6 @@
-import {Socket} from 'socket.io-client';
-import Player, {UserLocation} from './classes/Player';
+import { Socket } from 'socket.io-client';
+import Player, { UserLocation } from './classes/Player';
 import TownsServiceClient from './classes/TownsServiceClient';
-import PlayerMessage from "./classes/PlayerMessage";
 
 export type CoveyEvent = 'playerMoved' | 'playerAdded' | 'playerRemoved';
 
@@ -16,22 +15,17 @@ export type UserProfile = {
 export type NearbyPlayers = {
   nearbyPlayers: Player[]
 };
-
 export type CoveyAppState = {
   sessionToken: string,
   userName: string,
   currentTownFriendlyName: string,
   currentTownID: string,
   currentTownIsPubliclyListed: boolean,
-  messages: PlayerMessage[],
   myPlayerID: string,
   players: Player[],
   currentLocation: UserLocation,
-  isWorldMapFocused: boolean,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,
-  emitMessage: (message: PlayerMessage) => void,
-  setWorldMapFocus: (isFocused: boolean) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };

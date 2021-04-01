@@ -79,8 +79,10 @@ const useStyles = makeStyles({
   },
 
   textField: {
-    width: '60%',
-    background: '#efe4b1',
+    width: '80%',
+    background: '#efead6',
+    marginLeft: '5px',
+    marginRight: '5px'
 
   }
 
@@ -94,6 +96,9 @@ const ChatBox = (): JSX.Element => {
   const [newText, setNewText] = useState<string>('')
   const classes = useStyles();
   const [users, setUsers] = useState<MentionUser []>([]);
+  const [focused, setFocused] = useState(false)
+  const onFocus = () => setFocused(true)
+  const onBlur = () => setFocused(false)
 
     // new MentionUser("1", "harshal"),
     // new MentionUser("2", "cole"),
@@ -149,14 +154,14 @@ const ChatBox = (): JSX.Element => {
         {/* > */}
         {/*  <InputLabel */}
         {/*    id="playerChatSelection">Select A Player</InputLabel> */}
-          {/* <Select */}
-          {/*  labelId="playerChatSelection"> */}
-            {/* Will map players in room here */}
-            {players.map((player) =>
-              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
-            )}
-          </Select>
-        </FormGroup>
+        {/*   <Select */}
+        {/*    labelId="playerChatSelection"> */}
+        {/*     Will map players in room here */}
+        {/*    {players.map((player) => */}
+        {/*      <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem> */}
+        {/*    )} */}
+        {/*  </Select> */}
+        {/* </FormGroup> */}
 
 
 
@@ -181,7 +186,12 @@ const ChatBox = (): JSX.Element => {
         </Grid>
         <Grid container className={classes.messageCreation}>
 
-            <MentionsInput className={classes.textField} value={newText} onChange={(e) => setNewText(e.target.value)}>
+            <MentionsInput className={classes.textField}
+                           value={newText}
+                           onChange={(e) => setNewText(e.target.value)}
+                           onFocus={onFocus}
+                           onBlur={onBlur}
+            >
               <Mention
               trigger="@"
               data={users}

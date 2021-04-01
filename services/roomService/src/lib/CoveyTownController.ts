@@ -6,6 +6,7 @@ import PlayerSession from '../types/PlayerSession';
 import TwilioVideo from './TwilioVideo';
 import IVideoClient from './IVideoClient';
 import PlayerMessage from '../types/PlayerMessage';
+import PlayerMention from '../types/PlayerMention';
 
 const friendlyNanoID = customAlphabet('1234567890ABCDEF', 8);
 
@@ -180,5 +181,21 @@ export default class CoveyTownController {
       default:
         this._listeners.forEach(listener => listener.onPlayerMessage(message));
     }
+  }
+
+
+  sendPlayerMention(message: PlayerMention): void {
+    if (!this._listeners.get(message.senderProfileId)) {
+      throw new Error('Invalid sender profile id');
+    }
+   
+   
+    const recipientListener:CoveyTownListener | undefined = this._listeners.get(message.recipient);
+    if (!recipientListener) {
+      throw new Error('Invalid recipient id');
+    }
+    recipientListener.onPlayerMention(message);      
+      
+    
   }
 }

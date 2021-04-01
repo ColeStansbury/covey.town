@@ -109,13 +109,12 @@ describe('Part 1 - Public room listing', () => {
     mocklistTowns.mockReset();
   })
   it('is called when rendering (hopefully by a useeffect, this will be checked manually)', async () => {
-    jest.useRealTimers();
     mocklistTowns.mockImplementation(() => listTowns(nanoid()));
     const renderData = render(wrappedTownSelection());
     await waitFor(() => {
       expect(mocklistTowns)
-        .toHaveBeenCalledTimes(1);
-    }, {timeout: 200})
+        .toBeCalledTimes(1);
+    })
     renderData.unmount();
   });
   it('updates every 2000 msec', async () => {

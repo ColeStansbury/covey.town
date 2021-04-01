@@ -173,20 +173,20 @@ const ChatBox = (): JSX.Element => {
         <Typography
           variant='h4'
           className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
-        <FormGroup
-          row
-          className={classes.formControl}
-          >
-          <InputLabel
-            id="playerChatSelection">Select A Player</InputLabel>
-          <Select
-            labelId="playerChatSelection">
-            {/* Will map players in room here */}
-            {players.map((player) =>
-              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
-            )}
-          </Select>
-        </FormGroup>
+        {/*<FormGroup*/}
+        {/*  row*/}
+        {/*  className={classes.formControl} */}
+        {/*  > */}
+        {/*  <InputLabel */}
+        {/*    id="playerChatSelection">Select A Player</InputLabel> */}
+        {/*  <Select */}
+        {/*    labelId="playerChatSelection"> */}
+        {/*    /!* Will map players in room here *!/ */}
+        {/*    {players.map((player) => */}
+        {/*      <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem> */}
+        {/*    )} */}
+        {/*  </Select> */}
+        {/* </FormGroup> */}
 
 
 

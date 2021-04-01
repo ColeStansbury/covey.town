@@ -6,6 +6,8 @@ import useCoveyAppState from '../../hooks/useCoveyAppState';
 
 // https://medium.com/@michaelwesthadley/modular-game-worlds-in-phaser-3-tilemaps-1-958fc7e6bbd6
 class CoveyGameScene extends Phaser.Scene {
+
+
   private player?: {
     sprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody, label: Phaser.GameObjects.Text
   };
@@ -24,10 +26,17 @@ class CoveyGameScene extends Phaser.Scene {
 
   private emitMovement: (loc: UserLocation) => void;
 
-  constructor(video: Video, emitMovement: (loc: UserLocation) => void) {
+  private _isInFocus: boolean;
+
+  set isInFocus(inFocus: boolean) {
+    this._isInFocus = inFocus;
+  }
+
+  constructor(video: Video, emitMovement: (loc: UserLocation) => void, isInFocus: boolean) {
     super('PlayGame');
     this.video = video;
     this.emitMovement = emitMovement;
+    this._isInFocus = isInFocus;
   }
 
   preload() {
@@ -137,35 +146,38 @@ class CoveyGameScene extends Phaser.Scene {
       body.setVelocity(0);
 
       const primaryDirection = this.getNewMovementDirection();
-      switch (primaryDirection) {
-        case 'left':
-          body.setVelocityX(-speed);
-          this.player.sprite.anims.play('misa-left-walk', true);
-          break;
-        case 'right':
-          body.setVelocityX(speed);
-          this.player.sprite.anims.play('misa-right-walk', true);
-          break;
-        case 'front':
-          body.setVelocityY(speed);
-          this.player.sprite.anims.play('misa-front-walk', true);
-          break;
-        case 'back':
-          body.setVelocityY(-speed);
-          this.player.sprite.anims.play('misa-back-walk', true);
-          break;
-        default:
-          // Not moving
-          this.player.sprite.anims.stop();
-          // If we were moving, pick and idle frame to use
-          if (prevVelocity.x < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-left');
-          } else if (prevVelocity.x > 0) {
-            this.player.sprite.setTexture('atlas', 'misa-right');
-          } else if (prevVelocity.y < 0) {
-            this.player.sprite.setTexture('atlas', 'misa-back');
-          } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
-          break;
+
+      if (this._isInFocus) {
+        switch (primaryDirection) {
+          case 'left':
+            body.setVelocityX(-speed);
+            this.player.sprite.anims.play('misa-left-walk', true);
+            break;
+          case 'right':
+            body.setVelocityX(speed);
+            this.player.sprite.anims.play('misa-right-walk', true);
+            break;
+          case 'front':
+            body.setVelocityY(speed);
+            this.player.sprite.anims.play('misa-front-walk', true);
+            break;
+          case 'back':
+            body.setVelocityY(-speed);
+            this.player.sprite.anims.play('misa-back-walk', true);
+            break;
+          default:
+            // Not moving
+            this.player.sprite.anims.stop();
+            // If we were moving, pick and idle frame to use
+            if (prevVelocity.x < 0) {
+              this.player.sprite.setTexture('atlas', 'misa-left');
+            } else if (prevVelocity.x > 0) {
+              this.player.sprite.setTexture('atlas', 'misa-right');
+            } else if (prevVelocity.y < 0) {
+              this.player.sprite.setTexture('atlas', 'misa-back');
+            } else if (prevVelocity.y > 0) this.player.sprite.setTexture('atlas', 'misa-front');
+            break;
+        }
       }
 
 
@@ -304,7 +316,6 @@ class CoveyGameScene extends Phaser.Scene {
     const camera = this.cameras.main;
     camera.startFollow(this.player.sprite);
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-
     this.cursors.push(this.input.keyboard.createCursorKeys());
     this.cursors.push(this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -345,7 +356,7 @@ class CoveyGameScene extends Phaser.Scene {
 export default function WorldMap(): JSX.Element {
   const video = Video.instance();
   const {
-    emitMovement, players,
+    emitMovement, players, isWorldMapFocused,
   } = useCoveyAppState();
   const [gameScene, setGameScene] = useState<CoveyGameScene>();
   useEffect(() => {
@@ -364,7 +375,7 @@ export default function WorldMap(): JSX.Element {
 
     const game = new Phaser.Game(config);
     if (video) {
-      const newGameScene = new CoveyGameScene(video, emitMovement);
+      const newGameScene = new CoveyGameScene(video, emitMovement, isWorldMapFocused);
       setGameScene(newGameScene);
       game.scene.add('coveyBoard', newGameScene, true);
     }
@@ -372,11 +383,18 @@ export default function WorldMap(): JSX.Element {
       game.destroy(true);
     };
   }, [video, emitMovement]);
+  useEffect(() => {
+    if (gameScene) {
+      console.log(isWorldMapFocused);
+      gameScene.isInFocus = isWorldMapFocused || false;
+    }
+  }, [gameScene, isWorldMapFocused]);
 
   const deepPlayers = JSON.stringify(players);
   useEffect(() => {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
+
 
   return <div id="map-container"/>;
 }

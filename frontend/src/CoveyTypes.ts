@@ -27,9 +27,11 @@ export type CoveyAppState = {
   myPlayerID: string,
   players: Player[],
   currentLocation: UserLocation,
+  isWorldMapFocused: boolean,
   nearbyPlayers: NearbyPlayers,
   emitMovement: (location: UserLocation) => void,
   emitMessage: (message: PlayerMessage) => void,
+  setWorldMapFocus: (isFocused: boolean) => void,
   socket: Socket | null,
   apiClient: TownsServiceClient,
 };

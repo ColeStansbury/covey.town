@@ -131,7 +131,8 @@ const ChatBox = (): JSX.Element => {
     emitMessage,
     currentTownFriendlyName,
     players,
-    socket
+    socket,
+    playerColorMap
   } = useCoveyAppState();
   const [colors, setColors] = useState<string[]>(['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"])
   const [newText, setNewText] = useState<string>('')
@@ -144,11 +145,16 @@ const ChatBox = (): JSX.Element => {
   const toast = useToast();
   const messagesEndRef = useRef<null | HTMLDivElement>(null)
 
+
   const scrollToBottom = () => {
     // messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-    let temp = messagesEndRef.current?.scrollTop
-    temp = messagesEndRef.current?.scrollHeight
-    // const temp = document.getElementById("messageDiv")
+    // temp = messagesEndRef.current?.scrollHeight
+    const temp = document.getElementById("temp")
+    if(temp) {
+      let top = temp?.scrollTop
+      top = temp?.scrollHeight - temp?.clientHeight
+      temp.scrollTo(top,top)
+    }
     // console.log(temp?.scrollHeight)
     //     // let typescriptSucks = temp?.scrollTop
     //     // console.log("ts sucks", typescriptSucks)
@@ -159,19 +165,10 @@ const ChatBox = (): JSX.Element => {
   }
 
 
-  const usedColors = new Map<string, string>()
-  const pickColor = (playerId: string): string => {
-    if (usedColors.get(playerId) === undefined) {
-      const color = colors[Math.floor(Math.random() * colors.length)]
-      usedColors.set(playerId, color)
-      colors.filter(thisColor => thisColor !== color)
-      return color
-    }
-    const temp = usedColors.get(playerId)
-    return temp || ''
-
-
-  }
+  // const usedColors = new Map<string, string>()
+  // const pickColor = (playerId: string): string => {
+  //
+  // }
   const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
   const checkSenderName = (profileId: string) => (profileId === myPlayerID ?
     classes.playerMessageName : classes.otherPlayerMessageName)
@@ -189,8 +186,8 @@ const ChatBox = (): JSX.Element => {
         status: 'success',
       });
     });
-    
- 
+
+
   },[socket, toast])
 
   useEffect(() => {
@@ -200,9 +197,9 @@ const ChatBox = (): JSX.Element => {
 
   const getDisplayTextFromMention = (text: string) => {
     let displayText: string = _clone(text)
-  
+
     const tags: string[] = text.match(/@\{\{[^\\}]+\}\}/gi) || []
-    
+
     tags.forEach(myTag => {
       const tagData = myTag.slice(3, -2)
       const tagDataArray = tagData.split('||')
@@ -214,7 +211,7 @@ const ChatBox = (): JSX.Element => {
 
   const getIdsFromMention = (text: string) => {
 
-    
+
     const tags: string[] = text.match(/@\{\{[^\\}]+\}\}/gi) || []
     const allUserIds = tags.map(myTag => {
       const tagData = myTag.slice(3, -2)
@@ -268,7 +265,7 @@ const ChatBox = (): JSX.Element => {
       setNewRecipient({recipientId: value as string});
       setUsers(players.filter(p => p.id === value as string)
       .map(player => new MentionUser(player.id, player.userName)));
-      
+
     }
   }
 
@@ -305,6 +302,7 @@ const ChatBox = (): JSX.Element => {
         >
         <Grid className={classes.messageWindow}
               direction="column"
+              id="temp"
 
               container
         >
@@ -327,7 +325,7 @@ const ChatBox = (): JSX.Element => {
                 display="inline"
                 style={{
 
-                  backgroundColor: pickColor(message.senderProfileId)
+                  backgroundColor: playerColorMap.get(message.senderProfileId)
                 }}
               >
 

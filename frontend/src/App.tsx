@@ -35,6 +35,8 @@ import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClie
 import Video from './classes/Video/Video';
 import ChatView from "./components/Chat/ChatView";
 
+const colors = ['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"];
+
 type CoveyAppUpdate =
   | {
   action: 'doConnect';
@@ -46,6 +48,7 @@ type CoveyAppUpdate =
     myPlayerID: string, socket: Socket,
     players: Player[],
     messages: PlayerMessage[],
+    playerColorMap: Map<string, string>,
     emitMovement: (location: UserLocation) => void,
     emitMessage: (message: PlayerMessage) => void,
   }
@@ -63,6 +66,7 @@ function defaultAppState(): CoveyAppState {
     nearbyPlayers: {nearbyPlayers: []},
     players: [],
     messages: [],
+    playerColorMap: new Map<string, string>(),
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -90,6 +94,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     myPlayerID: state.myPlayerID,
     players: state.players,
     messages: state.messages,
+    playerColorMap: state.playerColorMap,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -132,9 +137,11 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
       nextState.messages = update.data.messages;
+      nextState.playerColorMap = update.data.playerColorMap;
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
+      nextState.playerColorMap.set(update.player.id, colors[Math.floor(Math.random() * colors.length)]);
       break;
     case 'playerMoved':
       updatePlayer = nextState.players.find((p) => p.id === update.player.id);
@@ -227,6 +234,16 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'weMoved', location});
   };
 
+  function initializeColorMap(players: ServerPlayer[]) : Map<string, string> {
+    let colorMap = new Map<string, string>();
+    players.forEach(player => {
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      colorMap.set(player._id, color);
+    });
+
+    return colorMap;
+  }
+
   dispatchAppUpdate({
     action: 'doConnect',
     data: {
@@ -240,6 +257,7 @@ async function GameController(initData: TownJoinResponse,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
       messages: initData.messages.map(message => PlayerMessage.fromServerMessage(message)),
+      playerColorMap: initializeColorMap(initData.currentPlayers),
     },
   });
   return true;

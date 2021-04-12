@@ -4,6 +4,7 @@ import { Socket as ServerSocket } from 'socket.io';
 import { AddressInfo } from 'net';
 import http from 'http';
 import { UserLocation } from '../CoveyTypes';
+import PlayerMessage from '../types/PlayerMessage';
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -11,8 +12,8 @@ export type RemoteServerPlayer = {
 
 export type RemoteServerPlayerMessage = {
 
-  senderProfileId: string,
-  senderName: string,
+  _senderProfileId: string,
+  _senderName: string,
   content: string,
   recipient: 'town' | { recipientId: string },
   
@@ -20,8 +21,8 @@ export type RemoteServerPlayerMessage = {
 
 export type RemoteServerPlayerMention = {
   
-  senderProfileId: string,
-  senderName: string,
+  _senderProfileId: string,
+  _senderName: string,
   recipient: string,
 
 };
@@ -68,7 +69,7 @@ export function createSocketClient(server: http.Server, sessionToken: string, co
   const address = server.address() as AddressInfo;
   const socket = io(`http://localhost:${address.port}`, {
     auth: { token: sessionToken, coveyTownID },
-    reconnection: false, timeout: 5000,
+    reconnection: false, timeout: 20000,
   });
   const connectPromise = new Promise<void>((resolve) => {
     socket.on('connect', () => {

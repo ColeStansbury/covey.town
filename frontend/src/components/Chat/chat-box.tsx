@@ -11,9 +11,8 @@ import {
   FormGroup,
   Grid,
   InputLabel,
-  ListItem,
   MenuItem,
-  Select, Tooltip,
+  Select,
   Typography,
 } from "@material-ui/core";
 import {Mention, MentionsInput} from 'react-mentions'
@@ -190,8 +189,9 @@ const ChatBox = (): JSX.Element => {
         status: 'success',
       });
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
   useEffect(() => {
     scrollToBottom()
@@ -200,10 +200,10 @@ const ChatBox = (): JSX.Element => {
 
   const getDisplayTextFromMention = (text: string) => {
     let displayText: string = _clone(text)
-    // eslint-disable-next-line no-useless-escape
-    const tags: string[] = text.match(/@\{\{[^\}]+\}\}/gi) || []
-    // eslint-disable-next-line array-callback-return
-    tags.map(myTag => {
+  
+    const tags: string[] = text.match(/@\{\{[^\\}]+\}\}/gi) || []
+    
+    tags.forEach(myTag => {
       const tagData = myTag.slice(3, -2)
       const tagDataArray = tagData.split('||')
       const tagDisplayValue = tagDataArray[1]
@@ -214,8 +214,8 @@ const ChatBox = (): JSX.Element => {
 
   const getIdsFromMention = (text: string) => {
 
-    // eslint-disable-next-line no-useless-escape
-    const tags: string[] = text.match(/@\{\{[^\}]+\}\}/gi) || []
+    
+    const tags: string[] = text.match(/@\{\{[^\\}]+\}\}/gi) || []
     const allUserIds = tags.map(myTag => {
       const tagData = myTag.slice(3, -2)
       const tagDataArray = tagData.split('||')

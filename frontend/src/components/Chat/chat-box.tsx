@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
@@ -13,17 +13,17 @@ import {
   InputLabel,
   ListItem,
   MenuItem,
-  Select,
+  Select, Tooltip,
   Typography,
 } from "@material-ui/core";
-import { Mention, MentionsInput } from 'react-mentions'
-import { useToast } from '@chakra-ui/react';
+import {Mention, MentionsInput} from 'react-mentions'
+import {useToast} from '@chakra-ui/react';
 import '../../App.css';
-import { makeStyles } from "@material-ui/styles";
+import {makeStyles} from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
-import PlayerMention, { ServerMentionMessage } from "../../classes/PlayerMention";
+import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
@@ -35,12 +35,13 @@ const useStyles = makeStyles({
     top: '2%',
     right: '2%',
     // bottom: '70vh',
-    background: '#efe4b1',
+    background: '#0e0e29',
     width: '20vw',
-    height: '71vh',
+    height: '70vh',
+    border: '3px solid #efe4b1',
     borderRadius: '45px',
     // overflow: 'auto',
-    scrollbarGutter: '10px'
+    scrollbarGutter: '10px',
 
   },
   chatHeader: {
@@ -53,7 +54,12 @@ const useStyles = makeStyles({
   fabIcon: {
     // width: '20%'
   },
-  formControl: {},
+  formControl: {
+    background: '#efead6',
+    alignContent: 'center'
+
+
+  },
   messageCreation: {
     justifyContent: 'between',
     float: 'right',
@@ -63,36 +69,51 @@ const useStyles = makeStyles({
     color: '#1d2bff'
   },
   messageWindow: {
-    height: '55vh',
     overflow: 'auto',
+    maxHeight: '55vh',
     flexWrap: 'nowrap'
   },
   messageBorder: {
     marginLeft: '5px',
-    marginRight: '5px'
+    marginRight: '5px',
+    backgroundColor: '#ffffff',
+    borderRadius: '45px'
+
+
   },
   otherPlayerMessage: {
     float: 'left',
-    textAlign: 'left'
+    textAlign: 'left',
 
   },
   otherPlayerMessageName: {
-    color: '#1d2bff'
+    // backgroundColor: pickColor(),
+    color: '#ffffff',
+    borderRadius: '45px',
+    margin: '2px'
   },
   playerMessage: {
-    alignItems: 'right',
-    textAlign: 'left'
+    float: 'right',
+    textAlign: 'right',
+
+
   },
   playerMessageName: {
-    color: '#ff0c13'
+    // backgroundColor: pickColor(),
+    color: '#ffffff',
+    borderRadius: '45px',
+    margin: '2px'
+
   },
 
   textField: {
     width: '80%',
     background: '#efead6',
-    marginLeft: '5px',
-    marginRight: '5px'
+    alignItems: 'end',
+    position: 'absolute',
+    bottom: 0,
 
+    borderBottomLeftRadius: '45px'
   }
 
 });
@@ -113,6 +134,7 @@ const ChatBox = (): JSX.Element => {
     players,
     socket
   } = useCoveyAppState();
+  const [colors, setColors] = useState<string[]>(['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"])
   const [newText, setNewText] = useState<string>('')
   const [newRecipient, setNewRecipient] = useState<'town' | { recipientId: string }>('town');
   const classes = useStyles();
@@ -121,6 +143,40 @@ const ChatBox = (): JSX.Element => {
   const onFocus = () => video?.pauseGame();
   const onBlur = () => video?.unPauseGame();
   const toast = useToast();
+  const messagesEndRef = useRef<null | HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    // messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
+    let temp = messagesEndRef.current?.scrollTop
+    temp = messagesEndRef.current?.scrollHeight
+    // const temp = document.getElementById("messageDiv")
+    // console.log(temp?.scrollHeight)
+    //     // let typescriptSucks = temp?.scrollTop
+    //     // console.log("ts sucks", typescriptSucks)
+    //     // typescriptSucks = temp?.scrollHeight
+    //     // console.log("ts sucks more", typescriptSucks)
+    // return typescriptSucks
+
+  }
+
+
+  const usedColors = new Map<string, string>()
+  const pickColor = (playerId: string): string => {
+    if (usedColors.get(playerId) === undefined) {
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      usedColors.set(playerId, color)
+      colors.filter(thisColor => thisColor !== color)
+      return color
+    }
+    const temp = usedColors.get(playerId)
+    return temp || ''
+
+
+  }
+  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
+  const checkSenderName = (profileId: string) => (profileId === myPlayerID ?
+    classes.playerMessageName : classes.otherPlayerMessageName)
+
 
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
@@ -136,6 +192,10 @@ const ChatBox = (): JSX.Element => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages]);
 
 
   const getDisplayTextFromMention = (text: string) => {
@@ -196,8 +256,7 @@ const ChatBox = (): JSX.Element => {
     ));
     setNewText('')
   }
-  const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
-  const checkSenderName = (profileId: string) => (profileId === myPlayerID ? classes.playerMessageName : classes.otherPlayerMessageName)
+
 
   const handleRecipientSelect = (e: React.ChangeEvent<{ value: unknown }>) => {
     const {value} = e.target;
@@ -209,7 +268,7 @@ const ChatBox = (): JSX.Element => {
   }
 
   return (
-    <Box border={1}>
+    <Box border={1} overflow="auto" >
       <Grid className={classes.chatbox}>
         <Typography
           variant='h4'
@@ -219,7 +278,9 @@ const ChatBox = (): JSX.Element => {
           className={classes.formControl}
         >
           <InputLabel
-            id="playerChatSelection">Select A Player</InputLabel>
+            id="playerChatSelection"
+
+          >Select A Player</InputLabel>
           <Select
             labelId="playerChatSelection"
             defaultValue='town'
@@ -233,28 +294,55 @@ const ChatBox = (): JSX.Element => {
           </Select>
         </FormGroup>
 
+        <Box height="80%"
 
-        <Grid className={classes.messageWindow} direction="column" container>
-          {/*  Actual messages would go here */}
-          {/* map messages here- ternary? popular function- clsx- space delimiter */}
-          {/* TODO: get name from sender profile */}
-          {/* {console.log(messages)} */}
+             //
+        >
+        <Grid className={classes.messageWindow}
+              direction="column"
+
+              container
+        >
+          <Box display="flex"
+               flexDirection="column"
+               justifyContent="flex-end"
+               overflow-y="scroll"
+               id="messageDiv"
+          >
+
           {messages.map((message) =>
             // console.log(message);
             (<Grid
+
               key={message.messageId}
-              className={checkSender(message.senderProfileId)}>
-              <ListItem
-                className={checkSenderName(message.senderProfileId)}>{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}</ListItem>
-              <Typography className={classes.messageBorder}>
-                {message.content}
+              className={checkSender(message.senderProfileId)}
+            >
+              <Typography
+                className={checkSenderName(message.senderProfileId)}
+                display="inline"
+                style={{
+
+                  backgroundColor: pickColor(message.senderProfileId)
+                }}
+              >
+
+
+                &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
+              </Typography>
+              <Typography className={classes.messageBorder}
+                          display="inline"
+              >
+                &nbsp;{message.content}&nbsp;
               </Typography>
             </Grid>)
           )
-          }
+          }</Box>
 
+          <div ref={messagesEndRef}
 
-        </Grid>
+          />
+
+        </Grid></Box>
         <Grid container className={classes.messageCreation}>
 
           <MentionsInput className={classes.textField}
@@ -264,24 +352,15 @@ const ChatBox = (): JSX.Element => {
                          onBlur={onBlur}
 
           >
-            {/* <Tooltip title="User mentioned you"> */}
             <Mention
-              // style={{color: '#1d2bff'}}
               trigger="@"
               data={users}
               markup="@{{__id__||__display__}}"
             />
-            {/* </Tooltip> */}
 
 
           </MentionsInput>
-          {/* <TextField
-            className={classes.textField}
-            // multiline
-            variant="filled"
-            value={newText}
-            onChange={(e) => checkForMention(e)}
-          /> */}
+
           <Fab
             className={classes.fabIcon}
             onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>

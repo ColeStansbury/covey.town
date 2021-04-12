@@ -14,7 +14,7 @@ export type RemoteServerPlayerMessage = {
 
   _senderProfileId: string,
   _senderName: string,
-  content: string,
+  _content: string,
   recipient: 'town' | { recipientId: string },
   
 };

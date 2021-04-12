@@ -262,8 +262,13 @@ const ChatBox = (): JSX.Element => {
     const {value} = e.target;
     if (value === 'town') {
       setNewRecipient('town');
+      setUsers(players.filter(p => p.id !== myPlayerID)
+      .map(player => new MentionUser(player.id, player.userName)));
     } else {
       setNewRecipient({recipientId: value as string});
+      setUsers(players.filter(p => p.id === value as string)
+      .map(player => new MentionUser(player.id, player.userName)));
+      
     }
   }
 

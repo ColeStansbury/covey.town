@@ -11,6 +11,7 @@ import { townSubscriptionHandler } from '../requestHandlers/CoveyTownRequestHand
 import CoveyTownsStore from './CoveyTownsStore';
 import * as TestUtils from '../client/TestUtils';
 import PlayerMessage from '../types/PlayerMessage';
+import PlayerMention from '../types/PlayerMention';
 
 jest.mock('./TwilioVideo');
 
@@ -151,6 +152,51 @@ describe('CoveyTownController', () => {
       mockListeners.forEach(listener => expect(listener.onPlayerMessage).toBeCalledWith(message)); 
 
     });
+
+
+    it('Message with incorrect senderId to throw a error', async () => {
+
+      const message : PlayerMessage = new PlayerMessage('notAListener', 'senderName', 'newTestMessage', 'town');  
+    
+      testingTown.addTownListener(mockListeners[0], nanoid());
+      testingTown.addTownListener(mockListeners[1], nanoid());
+      testingTown.addTownListener(mockListeners[2], nanoid());     
+      expect(() => testingTown.sendMessage(message)).toThrowError('Invalid sender profile id');      
+
+    });
+
+
+    it('should send private message to recipient listener only', async () => {
+
+      const message : PlayerMessage = new PlayerMessage('senderId', 'senderName', 'newTestMessage', { recipientId : 'receiverId' });  
+    
+      testingTown.addTownListener(mockListeners[0], 'receiverId');
+      testingTown.addTownListener(mockListeners[1], nanoid());
+      testingTown.addTownListener(mockListeners[2], 'senderId');     
+      testingTown.sendMessage(message);
+      expect(mockListeners[0].onPlayerMessage).toBeCalledWith(message);
+      expect(mockListeners[0].onPlayerMessage).toBeCalledTimes(1);
+      expect(mockListeners[1].onPlayerMessage).toBeCalledTimes(0);
+      expect(mockListeners[2].onPlayerMessage).toBeCalledTimes(1);
+
+    });
+
+
+    it('should send player mention to recipient listener only', async () => {
+
+      const message : PlayerMention = new PlayerMention('senderId', 'senderName', 'receiverId' );  
+    
+      testingTown.addTownListener(mockListeners[0], 'receiverId');
+      testingTown.addTownListener(mockListeners[1], nanoid());
+      testingTown.addTownListener(mockListeners[2], 'senderId');     
+      testingTown.sendPlayerMention(message);
+      expect(mockListeners[0].onPlayerMention).toBeCalledWith(message);
+      expect(mockListeners[0].onPlayerMention).toBeCalledTimes(1);
+      expect(mockListeners[1].onPlayerMention).toBeCalledTimes(0);
+      expect(mockListeners[2].onPlayerMention).toBeCalledTimes(0);
+
+    });
+
 
   });
   describe('townSubscriptionHandler', () => {

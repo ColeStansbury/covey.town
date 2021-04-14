@@ -29,7 +29,7 @@ import useMaybeVideo from "../../hooks/useMaybeVideo";
 const useStyles = makeStyles(() => ({
   root: {},
   chatBox: {
-    position: 'absolute',
+    position: 'fixed',
     top: '20px',
     right: '80px',
     background: '#0e0e29',
@@ -39,6 +39,7 @@ const useStyles = makeStyles(() => ({
     borderRadius: '45px',
     scrollbarGutter: '10px',
     maxHeight: '748px',
+    minHeight: '300px',
     minWidth: '200px',
   },
   chatHeader: {
@@ -120,6 +121,7 @@ const useStyles = makeStyles(() => ({
     bottom: 0,
     borderBottomLeftRadius: '40px',
     borderBottomRightRadius: '40px',
+    minHeight: '56px',
     '& textarea#mentionsInput': {
       caretColor: '#0e0e29',
       padding: '5px 50px 5px 5px',

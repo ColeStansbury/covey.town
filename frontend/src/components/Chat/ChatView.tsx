@@ -12,7 +12,13 @@ const useStyles = makeStyles({
     top: 'calc(768px - 56px)',
     right: '2%',
     zIndex: 1,
-  }
+  },
+  '@media (max-height: 768px)': {
+    chatToggle: {
+      top: 'unset',
+      bottom: '10px',
+    },
+  },
 });
 
 const ChatView = (): JSX.Element => {

@@ -177,11 +177,10 @@ const ChatBox = (): JSX.Element => {
 
 
   const scrollToBottom = () => {
-
     const messageWindow = document.getElementById("messageWindow")
     if (messageWindow) {
-      const top = messageWindow?.scrollHeight - messageWindow?.clientHeight
-      messageWindow.scrollTo(top, 0)
+      const bottom = messageWindow?.scrollHeight - messageWindow?.clientHeight
+      messageWindow.scrollTo(0, bottom)
     }
   }
 
@@ -202,8 +201,6 @@ const ChatBox = (): JSX.Element => {
         status: 'success',
       });
     });
-
-
   }, [socket, toast])
 
   useEffect(() => {
@@ -242,9 +239,7 @@ const ChatBox = (): JSX.Element => {
     if (text.length === 0) {
       return;
     }
-
     const mentions: MentionUser[] = getIdsFromMention(text);
-
     mentions.forEach(mention => {
       socket?.emit('sendPlayerMention', new PlayerMention(
         myPlayerID,
@@ -252,7 +247,6 @@ const ChatBox = (): JSX.Element => {
         mention.id,
         new Date(),
       ));
-
     });
 
     const displayText = getDisplayTextFromMention(text);
@@ -360,8 +354,8 @@ const ChatBox = (): JSX.Element => {
             <div ref={messagesEndRef}
 
             />
-
-          </Grid></Box>
+          </Grid>
+        </Box>
         <Grid container className={classes.messageCreation}>
 
           <MentionsInput
@@ -372,15 +366,12 @@ const ChatBox = (): JSX.Element => {
             onChange={(e) => setNewText(e.target.value)}
             onFocus={onFocus}
             onBlur={onBlur}
-
           >
             <Mention
               trigger="@"
               data={users}
               markup="@{{__id__||__display__}}"
             />
-
-
           </MentionsInput>
           <Fab
             className={classes.fabIcon}

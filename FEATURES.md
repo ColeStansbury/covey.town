@@ -22,6 +22,8 @@ Should the user wish to return focus back to their avatar in the town map, they 
 #### Public Messaging
 By default upon entering a town and opening the chat box, messages will be sent to the current town you are in. Public messages to the town can be seen by all members of the town. Because a chat history is stored, when new members join the town, they will have access to all previously sent public messages upon entering.
 
+If at any time a user leaves the town, upon leaving their chat history will be will have a "left" signifier next to their name and their user color will become greyed out.
+
 Public messages sent to the town are signified by "Town" being displayed at the top of the chat box in the "Select A Player" dropdown menu.
 
 #### Private Messaging
@@ -29,7 +31,7 @@ In order to send a private message, another user must be selected from the "Sele
 
 All private messages between two users are, of course, private. They will not be displayed to any other user other than the intended recipient. Because Covey.Town users are anonymous, if a user were to leave a town and return, their private chat history would be lost to them. This is the case even if the user returns with the same name.
 
-If at any time a user would like to switch back to sending public messages to the entire town, "Town" can be selected from the "Select A Player" dropdown menu.
+If at any time a user would like to switch back to sending public messages to the entire town, "Town" can be selected from the "Select A Player" dropdown menu. The public "Town" option is located at the very bottom of the list and is highlighted grey (to differentiate from another user having selected "Town" as their username).
 
 ### User Mentions
 Should the user wish to mention another user in public chat, they can make use of the Covey.Town chat Mentions feature. Mentions allow the user to notify another user and grab their attention by letting them know that you mentioned them by name in chat.

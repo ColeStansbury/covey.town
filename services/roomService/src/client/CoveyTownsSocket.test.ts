@@ -9,7 +9,7 @@ import * as TestUtils from './TestUtils';
 import { UserLocation } from '../CoveyTypes';
 import TownsServiceClient from './TownsServiceClient';
 import addTownRoutes from '../router/towns';
-import PlayerMessage, { ClientPlayerMessage } from '../types/PlayerMessage';
+import { ClientPlayerMessage } from '../types/PlayerMessage';
 
 type TestTownData = {
   friendlyName: string, coveyTownID: string,
@@ -196,8 +196,7 @@ describe('TownServiceApiSocket', () => {
     
     socketSenderOne.emit('sendPlayerMessage', message);
   
-    const [playerOneMessage, playerTwoMessage] = await Promise.all([playerMessage, playerMessagePromise2]);
-    
+    const [playerOneMessage, playerTwoMessage] = await Promise.all([playerMessage, playerMessagePromise2]);    
 
     expect(playerOneMessage._senderProfileId).toBe(joinData3.coveyUserID);
     expect(playerTwoMessage._senderProfileId).toBe(joinData3.coveyUserID);

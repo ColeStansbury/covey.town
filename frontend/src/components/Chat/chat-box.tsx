@@ -4,7 +4,6 @@ import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
 import _clone from 'lodash/clone'
 
-
 import {
   Box,
   Fab,
@@ -86,7 +85,7 @@ const useStyles = makeStyles({
 
   },
   otherPlayerMessageName: {
-    // backgroundColor: pickColor(),
+   
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
@@ -98,7 +97,7 @@ const useStyles = makeStyles({
 
   },
   playerMessageName: {
-    // backgroundColor: pickColor(),
+   
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
@@ -147,28 +146,15 @@ const ChatBox = (): JSX.Element => {
 
 
   const scrollToBottom = () => {
-    // messagesEndRef.current?.scrollIntoView({behavior: "smooth"});
-    // temp = messagesEndRef.current?.scrollHeight
+    
     const temp = document.getElementById("temp")
     if(temp) {
       let top = temp?.scrollTop
       top = temp?.scrollHeight - temp?.clientHeight
       temp.scrollTo(top,top)
     }
-    // console.log(temp?.scrollHeight)
-    //     // let typescriptSucks = temp?.scrollTop
-    //     // console.log("ts sucks", typescriptSucks)
-    //     // typescriptSucks = temp?.scrollHeight
-    //     // console.log("ts sucks more", typescriptSucks)
-    // return typescriptSucks
-
   }
 
-
-  // const usedColors = new Map<string, string>()
-  // const pickColor = (playerId: string): string => {
-  //
-  // }
   const checkSender = (profileId: string) => (profileId === myPlayerID ? classes.playerMessage : classes.otherPlayerMessage)
   const checkSenderName = (profileId: string) => (profileId === myPlayerID ?
     classes.playerMessageName : classes.otherPlayerMessageName)
@@ -211,7 +197,6 @@ const ChatBox = (): JSX.Element => {
 
   const getIdsFromMention = (text: string) => {
 
-
     const tags: string[] = text.match(/@\{\{[^\\}]+\}\}/gi) || []
     const allUserIds = tags.map(myTag => {
       const tagData = myTag.slice(3, -2)
@@ -227,7 +212,7 @@ const ChatBox = (): JSX.Element => {
     if (text.length === 0) {
       return;
     }
-    // console.log(getIdsFromMention(text));
+    
     const mentions: MentionUser[] = getIdsFromMention(text);
 
     mentions.forEach(mention => {
@@ -288,7 +273,7 @@ const ChatBox = (): JSX.Element => {
             defaultValue='town'
             onChange={e => handleRecipientSelect(e)}
           >
-            {/* Will map players in room here */}
+          
             {players.filter(p => p.id !== myPlayerID).map((player) =>
               <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
             )}
@@ -296,10 +281,7 @@ const ChatBox = (): JSX.Element => {
           </Select>
         </FormGroup>
 
-        <Box height="80%"
-
-             //
-        >
+        <Box height="80%">
         <Grid className={classes.messageWindow}
               direction="column"
               id="temp"
@@ -314,7 +296,7 @@ const ChatBox = (): JSX.Element => {
           >
 
           {messages.map((message) =>
-            // console.log(message);
+           
             (<Grid
 
               key={message.messageId}

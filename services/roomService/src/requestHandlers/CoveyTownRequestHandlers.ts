@@ -131,7 +131,7 @@ export async function townListHandler(): Promise<ResponseEnvelope<TownListRespon
   const townsStore = CoveyTownsStore.getInstance();
   return {
     isOK: true,
-    response: {towns: townsStore.getTowns()},
+    response: { towns: townsStore.getTowns() },
   };
 }
 
@@ -212,7 +212,7 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
 export function townSubscriptionHandler(socket: Socket): void {
   // Parse the client's session token from the connection
   // For each player, the session token should be the same string returned by joinTownHandler
-  const {token, coveyTownID} = socket.handshake.auth as { token: string; coveyTownID: string };
+  const { token, coveyTownID } = socket.handshake.auth as { token: string; coveyTownID: string };
 
   const townController = CoveyTownsStore.getInstance()
     .getControllerForTown(coveyTownID);

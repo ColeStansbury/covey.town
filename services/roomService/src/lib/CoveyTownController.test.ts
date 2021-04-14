@@ -153,7 +153,7 @@ describe('CoveyTownController', () => {
 
     });
 
-
+    // new feature test
     it('Message with incorrect senderId to throw a error', async () => {
 
       const message : PlayerMessage = new PlayerMessage('notAListener', 'senderName', 'newTestMessage', 'town');  
@@ -165,7 +165,21 @@ describe('CoveyTownController', () => {
 
     });
 
+    // new feature test
+    it('Mention with incorrect senderId to throw a error', async () => {
 
+      const message : PlayerMention = new PlayerMention(nanoid(), 'senderName', 'recipientId');  
+    
+      testingTown.addTownListener(mockListeners[0], 'senderId');
+      testingTown.addTownListener(mockListeners[1], 'recipientId');
+      testingTown.addTownListener(mockListeners[2], nanoid());     
+      expect(() => testingTown.sendPlayerMention(message)).toThrowError('Invalid sender profile id');      
+
+    });
+
+
+    
+    // new feature test
     it('should send private message to recipient listener only', async () => {
 
       const message : PlayerMessage = new PlayerMessage('senderId', 'senderName', 'newTestMessage', { recipientId : 'receiverId' });  
@@ -181,7 +195,7 @@ describe('CoveyTownController', () => {
 
     });
 
-
+    // new feature test
     it('should send player mention to recipient listener only', async () => {
 
       const message : PlayerMention = new PlayerMention('senderId', 'senderName', 'receiverId' );  
@@ -194,6 +208,19 @@ describe('CoveyTownController', () => {
       expect(mockListeners[0].onPlayerMention).toBeCalledTimes(1);
       expect(mockListeners[1].onPlayerMention).toBeCalledTimes(0);
       expect(mockListeners[2].onPlayerMention).toBeCalledTimes(0);
+
+    });
+
+
+    // new feature test
+    it('Mention with incorrect recipientId to throw a error', async () => {
+
+      const message : PlayerMention = new PlayerMention('senderId', 'senderName', nanoid());  
+    
+      testingTown.addTownListener(mockListeners[0], 'senderId');
+      testingTown.addTownListener(mockListeners[1], 'recipientId');
+      testingTown.addTownListener(mockListeners[2], nanoid());     
+      expect(() => testingTown.sendPlayerMention(message)).toThrowError('Invalid recipient id');      
 
     });
 
@@ -248,6 +275,67 @@ describe('CoveyTownController', () => {
         expect(mockSocket.emit).toBeCalledWith('townClosing');
         expect(mockSocket.disconnect).toBeCalledWith(true);
       });
+
+
+
+      // New Feature Test
+      it('should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends public message', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+        const message : PlayerMessage = new PlayerMessage(player.id, player.userName, 'newTestMessage', 'town');  
+        testingTown.sendMessage(message);
+        expect(mockSocket.emit).toBeCalledWith('receivePlayerMessage', message);
+
+      });
+
+      // New Feature Test
+      it('should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends private message', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+
+        const playerTwo : Player = new Player('test player Two');
+        const playerTwoSession = await testingTown.addPlayer(playerTwo); 
+        const mockSocketTwo = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerTwoSession.sessionToken, mockSocketTwo);
+        townSubscriptionHandler(mockSocketTwo);
+
+        const playerThree : Player = new Player('test player Three');
+        const playerThreeSession = await testingTown.addPlayer(playerThree); 
+        const mockSocketThree = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerThreeSession.sessionToken, mockSocketThree);
+        townSubscriptionHandler(mockSocketThree);
+        
+        const message : PlayerMessage = new PlayerMessage(player.id, player.userName, 'newTestMessage', { recipientId:playerTwo.id });  
+        testingTown.sendMessage(message);
+        expect(mockSocketTwo.emit).toBeCalledWith('receivePlayerMessage', message);
+        expect(mockSocketThree.emit).toBeCalledTimes(0);
+
+      });
+
+      // New Feature Test
+      it('should add a town listener, which should emit receivePlayerMention to the socket when a player sends message', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+
+        const playerTwo : Player = new Player('test player Two');
+        const playerTwoSession = await testingTown.addPlayer(playerTwo); 
+        const mockSocketTwo = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerTwoSession.sessionToken, mockSocketTwo);
+        townSubscriptionHandler(mockSocketTwo);
+        
+        const playerThree : Player = new Player('test player Three');
+        const playerThreeSession = await testingTown.addPlayer(playerThree); 
+        const mockSocketThree = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerThreeSession.sessionToken, mockSocketThree);
+        townSubscriptionHandler(mockSocketThree);
+
+        const messageMention : PlayerMention = new PlayerMention(player.id, player.userName,  playerTwo.id);         
+        await testingTown.sendPlayerMention(messageMention);
+        expect(mockSocketTwo.emit).toBeCalledWith('receivePlayerMention', messageMention);
+        expect(mockSocketThree.emit).toBeCalledTimes(0);
+
+      });
+
       describe('when a socket disconnect event is fired', () => {
         it('should remove the town listener for that socket, and stop sending events to it', async () => {
           TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
@@ -298,6 +386,121 @@ describe('CoveyTownController', () => {
           fail('No playerMovement handler registered');
         }
       });
+
+
+      // New Feature Test
+      it('should forward sendPlayerMessage events from the socket to subscribed listeners for public message', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+
+        const mockListenerOne = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerOne, session.player.id );
+
+        const playerTwo : Player = new Player('test player Two');
+        const playerTwoSession = await testingTown.addPlayer(playerTwo); 
+        const mockSocketTwo = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerTwoSession.sessionToken, mockSocketTwo);
+        townSubscriptionHandler(mockSocketTwo);
+        const mockListenerTwo = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerTwo, playerTwoSession.player.id );
+        
+        const playerThree : Player = new Player('test player Three');
+        const playerThreeSession = await testingTown.addPlayer(playerThree); 
+        const mockSocketThree = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerThreeSession.sessionToken, mockSocketThree);
+        townSubscriptionHandler(mockSocketThree);
+        const mockListenerThree = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerThree, playerThreeSession.player.id );
+
+  
+        const playerMessageHandler = mockSocket.on.mock.calls.find(call => call[0] === 'sendPlayerMessage');
+        if (playerMessageHandler && playerMessageHandler[1]) {
+          const message : PlayerMessage = new PlayerMessage(player.id, player.userName, 'newTestMessage', 'town');  
+          testingTown.sendMessage(message);
+          expect(mockListenerOne.onPlayerMessage).toHaveBeenCalledWith(message);
+          expect(mockListenerTwo.onPlayerMessage).toHaveBeenCalledWith(message);
+          expect(mockListenerThree.onPlayerMessage).toHaveBeenCalledWith(message);
+
+        } else {
+          fail('No playerMessage handler registered');
+        }
+      });
+
+
+      // New Feature Test
+      it('should forward sendPlayerMessage events from the socket to specific listeners for private message', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+
+        const mockListener = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListener, session.player.id );
+
+        const playerTwo : Player = new Player('test player Two');
+        const playerTwoSession = await testingTown.addPlayer(playerTwo); 
+        const mockSocketTwo = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerTwoSession.sessionToken, mockSocketTwo);
+        townSubscriptionHandler(mockSocketTwo);
+        const mockListenerTwo = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerTwo, playerTwoSession.player.id );
+        
+        const playerThree : Player = new Player('test player Three');
+        const playerThreeSession = await testingTown.addPlayer(playerThree); 
+        const mockSocketThree = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerThreeSession.sessionToken, mockSocketThree);
+        townSubscriptionHandler(mockSocketThree);
+        const mockListenerThree = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerThree, playerThreeSession.player.id );
+  
+        const playerMessageHandler = mockSocket.on.mock.calls.find(call => call[0] === 'sendPlayerMessage');
+        if (playerMessageHandler && playerMessageHandler[1]) {
+          const message : PlayerMessage = new PlayerMessage(player.id, player.userName, 'newTestMessage', { recipientId:playerTwo.id });  
+          testingTown.sendMessage(message);
+          expect(mockListener.onPlayerMessage).toHaveBeenCalledWith(message);
+          expect(mockListenerTwo.onPlayerMessage).toHaveBeenCalledWith(message);
+          expect(mockListenerThree.onPlayerMessage).toHaveBeenCalledTimes(0);
+        } else {
+          fail('No playerMessage handler registered');
+        }
+      });
+
+
+      // New Feature Test
+      it('should forward sendPlayerMention events from the socket to mentioned listener', async () => {
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
+        townSubscriptionHandler(mockSocket);
+        const mockListener = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListener, session.player.id );
+
+        const playerTwo : Player = new Player('test player Two');
+        const playerTwoSession = await testingTown.addPlayer(playerTwo); 
+        const mockSocketTwo = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerTwoSession.sessionToken, mockSocketTwo);
+        townSubscriptionHandler(mockSocket);
+        const mockListenerTwo = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerTwo, playerTwoSession.player.id );
+
+
+        const playerThree : Player = new Player('test player Three');
+        const playerThreeSession = await testingTown.addPlayer(playerThree); 
+        const mockSocketThree = mock<Socket>();
+        TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, playerThreeSession.sessionToken, mockSocketThree);
+        townSubscriptionHandler(mockSocketThree);
+        const mockListenerThree = mock<CoveyTownListener>();        
+        testingTown.addTownListener(mockListenerThree, playerThreeSession.player.id );
+      
+        const playerMessageHandler = mockSocket.on.mock.calls.find(call => call[0] === 'sendPlayerMention');
+        if (playerMessageHandler && playerMessageHandler[1]) {
+          const message : PlayerMention = new PlayerMention(player.id, player.userName, playerTwo.id);  
+          testingTown.sendPlayerMention(message);
+         
+          expect(mockListenerTwo.onPlayerMention).toHaveBeenCalledWith(message);
+          expect(mockListenerThree.onPlayerMention).toHaveBeenCalledTimes(0);
+        } else {
+          fail('No playerMention handler registered');
+        }
+      });
+
+
     });
   });
 });

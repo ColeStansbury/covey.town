@@ -308,7 +308,7 @@ const ChatBox = (): JSX.Element => {
               {players.filter(p => p.id !== myPlayerID).map((player) =>
                 <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
               )}
-              <MenuItem key='town' value='town'>Town</MenuItem>
+              <MenuItem key='town' value='town' style={{backgroundColor: 'gray'}}>Town</MenuItem>
             </Select>
           </InputLabel>
         </FormGroup>
@@ -344,7 +344,9 @@ const ChatBox = (): JSX.Element => {
                     }}
                   >
 
-                    &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
+                    &nbsp;
+                    {message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}
+                    &nbsp;
                     {playerColorMap.get(message.senderProfileId) ? '' : '(left)'}
                   </Typography>
                   <Typography className={`${classes.messageBorder} ${classes.messageBubble}`}

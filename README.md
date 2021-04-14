@@ -45,3 +45,14 @@ Create a `.env` file in the `frontend` directory, with the line: `REACT_APP_TOWN
 
 In the `frontend` directory, run `npm start` (again, you'll need to run `npm install` the very first time). After several moments (or minutes, depending on the speed of your machine), a browser will open with the frontend running locally.
 The frontend will automatically re-compile and reload in your browser if you change any files in the `frontend/src` directory.
+
+### GitHub URL
+[GitHub Repo Link](https://github.com/ColeStansbury/covey.town)
+
+### Netlify URL
+[Netlify URL](https://sleepy-hypatia-8598e8.netlify.app/)
+
+### Chat Service Tests
+Tests from previous Homeworks modified to reflect changes in exiting CoveyTown codebase
+New tests for user stories implemented are prefixed with "New Feature Test" in test description 
+All new tests are located in "CoveyTownsSocket.test.ts" and "CoveyTownController.test.ts" along with previous tests from Homeworks

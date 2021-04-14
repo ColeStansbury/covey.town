@@ -167,8 +167,7 @@ describe('TownServiceApiSocket', () => {
 
 
   // new feature test
-
-  it('Sends public message to all town players', async () => {
+  it('New Feature Test - Sends public message to all town players', async () => {
     const town = await createTownForTesting();
     const joinData = await apiClient.joinTown({ coveyTownID: town.coveyTownID, userName: nanoid() });
     const joinData2 = await apiClient.joinTown({ coveyTownID: town.coveyTownID, userName: nanoid() });
@@ -204,8 +203,8 @@ describe('TownServiceApiSocket', () => {
   });
 
 
-
-  it('Message content should be the same when received back from server', async () => {
+  // new feature test
+  it('New Feature Test - Message content should be the same when received back from server', async () => {
     const town = await createTownForTesting();
     const joinData = await apiClient.joinTown({ coveyTownID: town.coveyTownID, userName: nanoid() });
     const joinData2 = await apiClient.joinTown({ coveyTownID: town.coveyTownID, userName: nanoid() });
@@ -240,8 +239,8 @@ describe('TownServiceApiSocket', () => {
   
   });
 
-
-  it('Sends private message to specific player', async () => {
+  // new feature test
+  it('New Feature Test - Sends private message to specific player', async () => {
     const town = await createTownForTesting();
     const playerOne = nanoid();
     const playerTwo = nanoid();
@@ -271,8 +270,8 @@ describe('TownServiceApiSocket', () => {
   
   });
 
-
-  it('Send player mention to specific player', async () => {
+  // new feature test
+  it('New Feature Test - Send player mention to specific player', async () => {
     const town = await createTownForTesting();
     const playerOne = nanoid();
     const playerTwo = nanoid();

@@ -141,7 +141,7 @@ describe('CoveyTownController', () => {
     });
 
     // new feature test
-    it('should send messages to all listeners', async () => {
+    it('New Feature Test -  Should send messages to all listeners', async () => {
 
       const message : PlayerMessage = new PlayerMessage('senderId', 'senderName', 'newTestMessage', 'town');  
     
@@ -154,7 +154,7 @@ describe('CoveyTownController', () => {
     });
 
     // new feature test
-    it('Message with incorrect senderId to throw a error', async () => {
+    it('New Feature Test -  Message with incorrect senderId to throw a error', async () => {
 
       const message : PlayerMessage = new PlayerMessage('notAListener', 'senderName', 'newTestMessage', 'town');  
     
@@ -166,7 +166,7 @@ describe('CoveyTownController', () => {
     });
 
     // new feature test
-    it('Mention with incorrect senderId to throw a error', async () => {
+    it('New Feature Test -  Mention with incorrect senderId to throw a error', async () => {
 
       const message : PlayerMention = new PlayerMention(nanoid(), 'senderName', 'recipientId');  
     
@@ -180,7 +180,7 @@ describe('CoveyTownController', () => {
 
     
     // new feature test
-    it('should send private message to recipient listener only', async () => {
+    it('New Feature Test -  Should send private message to recipient listener only', async () => {
 
       const message : PlayerMessage = new PlayerMessage('senderId', 'senderName', 'newTestMessage', { recipientId : 'receiverId' });  
     
@@ -196,7 +196,7 @@ describe('CoveyTownController', () => {
     });
 
     // new feature test
-    it('should send player mention to recipient listener only', async () => {
+    it('New Feature Test -  should send player mention to recipient listener only', async () => {
 
       const message : PlayerMention = new PlayerMention('senderId', 'senderName', 'receiverId' );  
     
@@ -213,7 +213,7 @@ describe('CoveyTownController', () => {
 
 
     // new feature test
-    it('Mention with incorrect recipientId to throw a error', async () => {
+    it('New Feature Test -  Mention with incorrect recipientId to throw a error', async () => {
 
       const message : PlayerMention = new PlayerMention('senderId', 'senderName', nanoid());  
     
@@ -279,7 +279,7 @@ describe('CoveyTownController', () => {
 
 
       // New Feature Test
-      it('should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends public message', async () => {
+      it('New Feature Test -  Should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends public message', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
         const message : PlayerMessage = new PlayerMessage(player.id, player.userName, 'newTestMessage', 'town');  
@@ -289,7 +289,7 @@ describe('CoveyTownController', () => {
       });
 
       // New Feature Test
-      it('should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends private message', async () => {
+      it('New Feature Test - Should add a town listener, which should emit "receivePlayerMessage" to the socket when a player sends private message', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
 
@@ -313,7 +313,7 @@ describe('CoveyTownController', () => {
       });
 
       // New Feature Test
-      it('should add a town listener, which should emit receivePlayerMention to the socket when a player sends message', async () => {
+      it('New Feature Test - Should add a town listener, which should emit receivePlayerMention to the socket when a player sends message', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
 
@@ -389,7 +389,7 @@ describe('CoveyTownController', () => {
 
 
       // New Feature Test
-      it('should forward sendPlayerMessage events from the socket to subscribed listeners for public message', async () => {
+      it('New Feature Test - Should forward sendPlayerMessage events from the socket to subscribed listeners for public message', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
 
@@ -428,7 +428,7 @@ describe('CoveyTownController', () => {
 
 
       // New Feature Test
-      it('should forward sendPlayerMessage events from the socket to specific listeners for private message', async () => {
+      it('New Feature Test - Should forward sendPlayerMessage events from the socket to specific listeners for private message', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
 
@@ -465,7 +465,7 @@ describe('CoveyTownController', () => {
 
 
       // New Feature Test
-      it('should forward sendPlayerMention events from the socket to mentioned listener', async () => {
+      it('New Feature Test - Should forward sendPlayerMention events from the socket to mentioned listener', async () => {
         TestUtils.setSessionTokenAndTownID(testingTown.coveyTownID, session.sessionToken, mockSocket);
         townSubscriptionHandler(mockSocket);
         const mockListener = mock<CoveyTownListener>();        

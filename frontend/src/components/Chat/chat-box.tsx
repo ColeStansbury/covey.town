@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import _escapeRegExp from 'lodash/escapeRegExp'
 import _uniqBy from 'lodash/uniqBy'
@@ -14,24 +14,24 @@ import {
   Select,
   Typography,
 } from "@material-ui/core";
-import {Mention, MentionsInput} from 'react-mentions'
-import {useToast} from '@chakra-ui/react';
+import { Mention, MentionsInput } from 'react-mentions'
+import { useToast } from '@chakra-ui/react';
 import '../../App.css';
-import {makeStyles} from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import SendIcon from '@material-ui/icons/Send';
 import useCoveyAppState from "../../hooks/useCoveyAppState";
 import PlayerMessage from "../../classes/PlayerMessage";
-import PlayerMention, {ServerMentionMessage} from "../../classes/PlayerMention";
+import PlayerMention, { ServerMentionMessage } from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
 
 const useStyles = makeStyles({
   root: {},
-  chatbox: {
+  chatBox: {
     position: 'absolute',
-    top: '2%',
-    right: '2%',
+    top: '20px',
+    right: '20px',
     // bottom: '70vh',
     background: '#0e0e29',
     width: '20vw',
@@ -40,28 +40,38 @@ const useStyles = makeStyles({
     borderRadius: '45px',
     // overflow: 'auto',
     scrollbarGutter: '10px',
+    maxHeight: '748px',
 
   },
   chatHeader: {
     textAlign: 'center',
     background: '#4f4f4f',
     color: '#ffffff',
+    padding: '10px',
     borderTopLeftRadius: '45px',
-    borderTopRightRadius: '45px'
+    borderTopRightRadius: '45px',
+    height: '12%',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    wordWrap: 'break-word',
+    display: 'block',
+    fontSize: '1.5rem',
+    lineHeight: '1.5em',
   },
   fabIcon: {
     // width: '20%'
+    position: 'absolute',
+    marginLeft: 'calc(100% - 60px)',
   },
   formControl: {
     background: '#efead6',
-    alignContent: 'center'
-
-
+    alignContent: 'center',
+    height: '8%',
   },
   messageCreation: {
-    justifyContent: 'between',
     float: 'right',
-    top: 'flex-end'
+    flexWrap: 'unset',
+    height: '10%',
   },
   mentionText: {
     color: '#1d2bff'
@@ -71,21 +81,20 @@ const useStyles = makeStyles({
     maxHeight: '55vh',
     flexWrap: 'nowrap'
   },
+  messageContainer: {
+    height: '70%',
+  },
   messageBorder: {
     marginLeft: '5px',
     marginRight: '5px',
     backgroundColor: '#ffffff',
     borderRadius: '45px'
-
-
   },
   otherPlayerMessage: {
     float: 'left',
     textAlign: 'left',
-
   },
   otherPlayerMessageName: {
-   
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
@@ -93,25 +102,24 @@ const useStyles = makeStyles({
   playerMessage: {
     float: 'right',
     textAlign: 'right',
-
-
   },
   playerMessageName: {
-   
     color: '#ffffff',
     borderRadius: '45px',
     margin: '2px'
-
   },
 
   textField: {
-    width: '80%',
+    width: '100%',
     background: '#efead6',
     alignItems: 'end',
-    position: 'absolute',
     bottom: 0,
-
-    borderBottomLeftRadius: '45px'
+    borderBottomLeftRadius: '45px',
+    borderBottomRightRadius: '45px',
+    paddingRight: '50px',
+    '& :focusin': {
+      backgroundColor: 'blue',
+    }
   }
 
 });
@@ -146,12 +154,12 @@ const ChatBox = (): JSX.Element => {
 
 
   const scrollToBottom = () => {
-    
+
     const temp = document.getElementById("temp")
-    if(temp) {
+    if (temp) {
       let top = temp?.scrollTop
       top = temp?.scrollHeight - temp?.clientHeight
-      temp.scrollTo(top,top)
+      temp.scrollTo(top, top)
     }
   }
 
@@ -174,7 +182,7 @@ const ChatBox = (): JSX.Element => {
     });
 
 
-  },[socket, toast])
+  }, [socket, toast])
 
   useEffect(() => {
     scrollToBottom()
@@ -212,7 +220,7 @@ const ChatBox = (): JSX.Element => {
     if (text.length === 0) {
       return;
     }
-    
+
     const mentions: MentionUser[] = getIdsFromMention(text);
 
     mentions.forEach(mention => {
@@ -236,7 +244,9 @@ const ChatBox = (): JSX.Element => {
       newRecipient,
       new Date(),
     ));
-    setNewText('')
+    setNewText('');
+    document.getElementById('mentionsInput')?.focus();
+    onFocus();
   }
 
 
@@ -245,18 +255,18 @@ const ChatBox = (): JSX.Element => {
     if (value === 'town') {
       setNewRecipient('town');
       setUsers(players.filter(p => p.id !== myPlayerID)
-      .map(player => new MentionUser(player.id, player.userName)));
+        .map(player => new MentionUser(player.id, player.userName)));
     } else {
       setNewRecipient({recipientId: value as string});
       setUsers(players.filter(p => p.id === value as string)
-      .map(player => new MentionUser(player.id, player.userName)));
+        .map(player => new MentionUser(player.id, player.userName)));
 
     }
   }
 
   return (
-    <Box border={1} overflow="auto" >
-      <Grid className={classes.chatbox}>
+    <Box border={1} overflow="auto">
+      <Grid className={classes.chatBox}>
         <Typography
           variant='h4'
           className={classes.chatHeader}>{currentTownFriendlyName}&apos;s chat</Typography>
@@ -273,7 +283,7 @@ const ChatBox = (): JSX.Element => {
             defaultValue='town'
             onChange={e => handleRecipientSelect(e)}
           >
-          
+
             {players.filter(p => p.id !== myPlayerID).map((player) =>
               <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
             )}
@@ -281,60 +291,62 @@ const ChatBox = (): JSX.Element => {
           </Select>
         </FormGroup>
 
-        <Box height="80%">
-        <Grid className={classes.messageWindow}
-              direction="column"
-              id="temp"
+        <Box className={classes.messageContainer}>
+          <Grid className={classes.messageWindow}
+                direction="column"
+                id="temp"
 
-              container
-        >
-          <Box display="flex"
-               flexDirection="column"
-               justifyContent="flex-end"
-               overflow-y="scroll"
-               id="messageDiv"
+                container
           >
-
-          {messages.map((message) =>
-           
-            (<Grid
-
-              key={message.messageId}
-              className={checkSender(message.senderProfileId)}
+            <Box display="flex"
+                 flexDirection="column"
+                 justifyContent="flex-end"
+                 overflow-y="scroll"
+                 id="messageDiv"
             >
-              <Typography
-                className={checkSenderName(message.senderProfileId)}
-                display="inline"
-                style={{
 
-                  backgroundColor: playerColorMap.get(message.senderProfileId)
-                }}
-              >
+              {messages.map((message) =>
+
+                (<Grid
+
+                  key={message.messageId}
+                  className={checkSender(message.senderProfileId)}
+                >
+                  <Typography
+                    className={checkSenderName(message.senderProfileId)}
+                    display="inline"
+                    style={{
+
+                      backgroundColor: playerColorMap.get(message.senderProfileId)
+                    }}
+                  >
 
 
-                &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
-              </Typography>
-              <Typography className={classes.messageBorder}
-                          display="inline"
-              >
-                &nbsp;{message.content}&nbsp;
-              </Typography>
-            </Grid>)
-          )
-          }</Box>
+                    &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
+                  </Typography>
+                  <Typography className={classes.messageBorder}
+                              display="inline"
+                  >
+                    &nbsp;{message.content}&nbsp;
+                  </Typography>
+                </Grid>)
+              )
+              }</Box>
 
-          <div ref={messagesEndRef}
+            <div ref={messagesEndRef}
 
-          />
+            />
 
-        </Grid></Box>
+          </Grid></Box>
         <Grid container className={classes.messageCreation}>
 
-          <MentionsInput className={classes.textField}
-                         value={newText}
-                         onChange={(e) => setNewText(e.target.value)}
-                         onFocus={onFocus}
-                         onBlur={onBlur}
+          <MentionsInput
+            id='mentionsInput'
+            className={classes.textField}
+            value={newText}
+            onChange={(e) => setNewText(e.target.value)}
+            onFocus={onFocus}
+            onBlur={onBlur}
 
           >
             <Mention

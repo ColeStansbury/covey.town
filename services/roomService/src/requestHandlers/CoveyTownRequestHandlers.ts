@@ -198,8 +198,8 @@ function townSocketAdapter(socket: Socket): CoveyTownListener {
     onPlayerMessage(message: PlayerMessage) {
       socket.emit('receivePlayerMessage', message);
     },
-    onPlayerMention(message: PlayerMention) {
-      socket.emit('receivePlayerMention', message);
+    onPlayerMention(mention: PlayerMention) {
+      socket.emit('receivePlayerMention', mention);
     },
   };
 }

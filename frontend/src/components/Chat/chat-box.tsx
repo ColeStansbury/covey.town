@@ -26,12 +26,12 @@ import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme =>({
   root: {},
   chatBox: {
     position: 'absolute',
     top: '20px',
-    right: '20px',
+    right: '35px',
     // bottom: '70vh',
     background: '#0e0e29',
     width: '20vw',
@@ -41,15 +41,15 @@ const useStyles = makeStyles({
     // overflow: 'auto',
     scrollbarGutter: '10px',
     maxHeight: '748px',
-
+    minWidth: '200px',
   },
   chatHeader: {
     textAlign: 'center',
     background: '#4f4f4f',
     color: '#ffffff',
     padding: '10px',
-    borderTopLeftRadius: '45px',
-    borderTopRightRadius: '45px',
+    borderTopLeftRadius: '40px',
+    borderTopRightRadius: '40px',
     height: '12%',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
@@ -58,15 +58,14 @@ const useStyles = makeStyles({
     fontSize: '1.5rem',
     lineHeight: '1.5em',
   },
-  fabIcon: {
-    // width: '20%'
-    position: 'absolute',
-    marginLeft: 'calc(100% - 60px)',
-  },
   formControl: {
     background: '#efead6',
     alignContent: 'center',
     height: '8%',
+  },
+  selectAPlayerLabel: {
+    fontSize: '1rem',
+    lineHeight: '1rem',
   },
   messageCreation: {
     float: 'right',
@@ -114,15 +113,36 @@ const useStyles = makeStyles({
     background: '#efead6',
     alignItems: 'end',
     bottom: 0,
-    borderBottomLeftRadius: '45px',
-    borderBottomRightRadius: '45px',
-    paddingRight: '50px',
-    '& :focusin': {
-      backgroundColor: 'blue',
-    }
-  }
+    borderBottomLeftRadius: '40px',
+    borderBottomRightRadius: '40px',
+    '& textarea#mentionsInput': {
+      caretColor: '#0e0e29',
+      padding: '5px 50px 5px 5px',
+      '&:focus': {
+        outline: 'none',
+      },
+    },
+  },
+  fabContainer: {
+    alignItems: 'center',
+  },
+  fabIcon: {
+    width: '45px',
+    height: '45px',
+    position: 'absolute',
+    marginLeft: 'calc(100% - 50px)',
+  },
+  '@media (max-width: 1280px)': {
+    chatBox: {
+      top: '200px',
+    },
+    fabIcon: {
+      width: '25px',
+      height: '25px',
 
-});
+    },
+  }
+}));
 
 
 //  look up jss
@@ -275,20 +295,21 @@ const ChatBox = (): JSX.Element => {
           className={classes.formControl}
         >
           <InputLabel
+            className={classes.selectAPlayerLabel}
             id="playerChatSelection"
 
-          >Select A Player</InputLabel>
-          <Select
-            labelId="playerChatSelection"
-            defaultValue='town'
-            onChange={e => handleRecipientSelect(e)}
-          >
-
-            {players.filter(p => p.id !== myPlayerID).map((player) =>
-              <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
-            )}
-            <MenuItem key='town' value='town'>Town</MenuItem>
-          </Select>
+          >Select A Player
+            <Select
+              labelId="playerChatSelection"
+              defaultValue='town'
+              onChange={e => handleRecipientSelect(e)}
+            >
+              {players.filter(p => p.id !== myPlayerID).map((player) =>
+                <MenuItem key={player.id} value={player.id}>{player.userName}</MenuItem>
+              )}
+              <MenuItem key='town' value='town'>Town</MenuItem>
+            </Select>
+          </InputLabel>
         </FormGroup>
 
         <Box className={classes.messageContainer}>
@@ -357,7 +378,6 @@ const ChatBox = (): JSX.Element => {
 
 
           </MentionsInput>
-
           <Fab
             className={classes.fabIcon}
             onClick={() => sendMessage(newText)}><SendIcon color="secondary"/></Fab>

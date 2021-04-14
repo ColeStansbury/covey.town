@@ -11,7 +11,6 @@ Upon logging in the Covey.Town, the chat box will be available in one of two way
 1. On larger devices, the chat box will be automatically open on the far right of the screen.
 2. On smaller devices, a message button will be available on the lower right of the screen. When the user clicks on the chat button, the chat box will open on the right side of the screen. It can be closed by clicking the button once more.
 
-
 ### Typing Messages and Chat Focus
 In each Covey.Town town, users have an avatar representation that they can use to navigate the town map. Because users can use their keyboard to interact with the town that they are in, the chat box needs to be in focus in order to type text. In order to bring the chat box into focus, it will need to be opened.
 
@@ -35,4 +34,4 @@ If at any time a user would like to switch back to sending public messages to th
 ### User Mentions
 Should the user wish to mention another user in public chat, they can make use of the Covey.Town chat Mentions feature. Mentions allow the user to notify another user and grab their attention by letting them know that you mentioned them by name in chat.
 
-In order to mention someone, the user simply has to type the "@" symbol into the text field. Once "@" has been entered into the text field, the entire list of names in the town will be scrollable. From there, the user can either scroll to find the user they would like to mention or continue typing the name. As the user types, the list of names matching will be filtered down. With the desired user selected, the rest of the message can be finished and sent. Once the message is sent, a notification will display at the bottom of the mentioned user's screen letting them know that they have been mentioned in chat by another user.
+In order to mention someone, the user simply has to type the "@" symbol into the text field to begin the process. Once "@" has been entered into the text field, the entire list of names in the town will be scrollable. From there, the user can either scroll to find the user they would like to mention or continue typing the name. As the user types, the list of names matching will be filtered down. With the desired user selected, the rest of the message can be finished and sent. Once the message is sent, a notification will display at the bottom of the mentioned user's screen letting them know that they have been mentioned in chat by another user.

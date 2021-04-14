@@ -1,7 +1,7 @@
-import React, {useState} from "react";
-import {Fab, Hidden} from "@material-ui/core";
+import React, { useState } from "react";
+import { Fab, Hidden } from "@material-ui/core";
 import ForumIcon from '@material-ui/icons/Forum';
-import {makeStyles} from "@material-ui/styles";
+import { makeStyles } from "@material-ui/styles";
 import ChatBox from "./chat-box";
 
 
@@ -9,8 +9,9 @@ const useStyles = makeStyles({
   root: {},
   chatToggle: {
     position: 'fixed',
-    bottom: '2%',
+    top: 'calc(768px - 56px)',
     right: '2%',
+    zIndex: 1,
   }
 });
 
@@ -21,21 +22,20 @@ const ChatView = (): JSX.Element => {
 
   return (
     <>
-      <Hidden only={['xs', 'sm', 'md']}>
+      <Hidden only={['xs', 'sm', 'md', 'lg']}>
         <ChatBox/>
       </Hidden>
-      <Hidden only={['lg', 'xl']}>
+      <Hidden only={['xl']}>
         {
           view ? <ChatBox/> : null
         }
-        <Fab>
+        <Fab className={classes.chatToggle}>
           <ForumIcon
-            className={classes.chatToggle}
             onClick={() => setView(!view)}/>
-          </Fab>
+        </Fab>
       </Hidden>
 
-      </>
+    </>
   )
 
 }

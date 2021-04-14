@@ -34,8 +34,8 @@ import PlayerMessage, { ServerMessage } from "./classes/PlayerMessage";
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatView from "./components/Chat/ChatView";
+import MESSAGE_COLORS from './components/Chat/message-colors';
 
-const colors = ['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"];
 
 type CoveyAppUpdate =
   | {
@@ -141,7 +141,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
-      nextState.playerColorMap.set(update.player.id, colors[Math.floor(Math.random() * colors.length)]);
+      nextState.playerColorMap.set(update.player.id, MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)]);
       break;
     case 'playerMoved':
       updatePlayer = nextState.players.find((p) => p.id === update.player.id);
@@ -167,7 +167,7 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       break;
     case 'playerDisconnect':
       nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
-
+      nextState.playerColorMap.delete(update.player.id);
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
@@ -234,11 +234,11 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'weMoved', location});
   };
 
-  function initializeColorMap(players: ServerPlayer[]) : Map<string, string> {
+  function initializeColorMap(players: ServerPlayer[]): Map<string, string> {
     const colorMap = new Map<string, string>();
     let lastColor: string;
     players.forEach(player => {
-      const color = colors[Math.floor(Math.random() * colors.length)];
+      const color = MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)];
       colorMap.set(player._id, color);
     });
 

@@ -77,7 +77,7 @@ class CoveyGameScene extends Phaser.Scene {
   updatePlayerLocation(player: Player) {
     let myPlayer = this.players.find((p) => p.id === player.id);
     if (!myPlayer) {
-      let { location } = player;
+      let {location} = player;
       if (!location) {
         location = {
           rotation: 'back',
@@ -90,7 +90,7 @@ class CoveyGameScene extends Phaser.Scene {
       this.players.push(myPlayer);
     }
     if (this.id !== myPlayer.id && this.physics && player.location) {
-      let { sprite } = myPlayer;
+      let {sprite} = myPlayer;
       if (!sprite) {
         sprite = this.physics.add
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -210,7 +210,7 @@ class CoveyGameScene extends Phaser.Scene {
   }
 
   create() {
-    const map = this.make.tilemap({ key: 'map' });
+    const map = this.make.tilemap({key: 'map'});
 
     /* Parameters are the name you gave the tileset in Tiled and then the key of the
      tileset image in Phaser's cache (i.e. the name you used in preload)
@@ -221,7 +221,7 @@ class CoveyGameScene extends Phaser.Scene {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const belowLayer = map.createLayer('Below Player', tileset, 0, 0);
     const worldLayer = map.createLayer('World', tileset, 0, 0);
-    worldLayer.setCollisionByProperty({ collides: true });
+    worldLayer.setCollisionByProperty({collides: true});
     const aboveLayer = map.createLayer('Above Player', tileset, 0, 0);
     /* By default, everything gets depth sorted on the screen in the order we created things.
      Here, we want the "Above Player" layer to sit on top of the player, so we explicitly give
@@ -238,7 +238,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Find all of the transporters, add them to the physics engine
     const transporters = map.createFromObjects('Objects',
-      { name: 'transporter' })
+      {name: 'transporter'})
     this.physics.world.enable(transporters);
 
     // For each of the transporters (rectangle objects), we need to tweak their location on the scene
@@ -252,16 +252,15 @@ class CoveyGameScene extends Phaser.Scene {
       }
     );
 
-    const labels = map.filterObjects('Objects',(obj)=>obj.name==='label');
+    const labels = map.filterObjects('Objects', (obj) => obj.name === 'label');
     labels.forEach(label => {
-      if(label.x && label.y){
+      if (label.x && label.y) {
         this.add.text(label.x, label.y, label.text.text, {
           color: '#FFFFFF',
           backgroundColor: '#000000',
         })
       }
     });
-
 
 
     const cursorKeys = this.input.keyboard.createCursorKeys();
@@ -278,8 +277,6 @@ class CoveyGameScene extends Phaser.Scene {
       'left': Phaser.Input.Keyboard.KeyCodes.K,
       'right': Phaser.Input.Keyboard.KeyCodes.L
     }, false) as Phaser.Types.Input.Keyboard.CursorKeys);
-
-
 
 
     // Create a sprite with physics enabled via the physics system. The image used for the sprite
@@ -306,21 +303,20 @@ class CoveyGameScene extends Phaser.Scene {
     of the transporter.
      */
     this.physics.add.overlap(sprite, transporters,
-      (overlappingObject, transporter)=>{
-        if(cursorKeys.space.isDown && this.player){
+      (overlappingObject, transporter) => {
+        if (cursorKeys.space.isDown && this.player) {
           // In the tiled editor, set the 'target' to be an *object* pointer
           // Here, we'll see just the ID, then find the object by ID
           const transportTargetID = transporter.getData('target') as number;
           const target = map.findObject('Objects', obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID);
-          if(target && target.x && target.y && this.lastLocation){
+          if (target && target.x && target.y && this.lastLocation) {
             // Move the player to the target, update lastLocation and send it to other players
             this.player.sprite.x = target.x;
             this.player.sprite.y = target.y;
             this.lastLocation.x = target.x;
             this.lastLocation.y = target.y;
             this.emitMovement(this.lastLocation);
-          }
-          else{
+          } else {
             throw new Error(`Unable to find target object ${target}`);
           }
         }
@@ -340,7 +336,7 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Create the player's walking animations from the texture atlas. These are stored in the global
     // animation manager so any sprite can access them.
-    const { anims } = this;
+    const {anims} = this;
     anims.create({
       key: 'misa-left-walk',
       frames: anims.generateFrameNames('atlas', {
@@ -391,7 +387,6 @@ class CoveyGameScene extends Phaser.Scene {
     camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
 
-
     // Help text that has a "fixed" position on the screen
     this.add
       .text(16, 16, `Arrow keys to move, space to transport\nCurrent town: ${this.video.townFriendlyName} (${this.video.coveyTownID})`, {
@@ -422,7 +417,7 @@ class CoveyGameScene extends Phaser.Scene {
 
   resume() {
     this.paused = false;
-    if(Video.instance()){
+    if (Video.instance()) {
       // If the game is also in process of being torn down, the keyboard could be undefined
       this.input.keyboard.addCapture(this.previouslyCapturedKeys);
     }
@@ -445,7 +440,7 @@ export default function WorldMap(): JSX.Element {
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 0 }, // Top down game, so no gravity
+          gravity: {y: 0}, // Top down game, so no gravity
         },
       },
     };
@@ -472,5 +467,8 @@ export default function WorldMap(): JSX.Element {
     gameScene?.updatePlayersLocations(players);
   }, [players, deepPlayers, gameScene]);
 
-  return <div id="map-container"/>;
+  return <div
+    style={{width: '1024px'}}
+    onFocusCapture={() => video?.unPauseGame()}
+    id="map-container"/>;
 }

@@ -26,19 +26,17 @@ import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
 
 
-const useStyles = makeStyles(theme =>({
+const useStyles = makeStyles(() => ({
   root: {},
   chatBox: {
     position: 'absolute',
     top: '20px',
-    right: '35px',
-    // bottom: '70vh',
+    right: '80px',
     background: '#0e0e29',
     width: '20vw',
     height: '70vh',
     border: '3px solid #efe4b1',
     borderRadius: '45px',
-    // overflow: 'auto',
     scrollbarGutter: '10px',
     maxHeight: '748px',
     minWidth: '200px',
@@ -56,7 +54,6 @@ const useStyles = makeStyles(theme =>({
     wordWrap: 'break-word',
     display: 'block',
     fontSize: '1.5rem',
-    lineHeight: '1.5em',
   },
   formControl: {
     background: '#efead6',
@@ -75,13 +72,21 @@ const useStyles = makeStyles(theme =>({
   mentionText: {
     color: '#1d2bff'
   },
-  messageWindow: {
-    overflow: 'auto',
-    maxHeight: '55vh',
-    flexWrap: 'nowrap'
-  },
   messageContainer: {
     height: '70%',
+    overflow: 'auto',
+    maxHeight: '55vh',
+    padding: '5px',
+    '& .MuiGrid-container': {
+      flexWrap: 'nowrap',
+    },
+  },
+  message: {
+    marginTop: '3px',
+  },
+  messageBubble: {
+    padding: '3px',
+    fontSize: '1rem',
   },
   messageBorder: {
     marginLeft: '5px',
@@ -139,7 +144,6 @@ const useStyles = makeStyles(theme =>({
     fabIcon: {
       width: '25px',
       height: '25px',
-
     },
   }
 }));
@@ -161,7 +165,6 @@ const ChatBox = (): JSX.Element => {
     socket,
     playerColorMap
   } = useCoveyAppState();
-  const [colors, setColors] = useState<string[]>(['#ff0c13', '#FF660E', '#040fff', "#ff27db", "#27ff09"])
   const [newText, setNewText] = useState<string>('')
   const [newRecipient, setNewRecipient] = useState<'town' | { recipientId: string }>('town');
   const classes = useStyles();
@@ -175,11 +178,10 @@ const ChatBox = (): JSX.Element => {
 
   const scrollToBottom = () => {
 
-    const temp = document.getElementById("temp")
-    if (temp) {
-      let top = temp?.scrollTop
-      top = temp?.scrollHeight - temp?.clientHeight
-      temp.scrollTo(top, top)
+    const messageWindow = document.getElementById("messageWindow")
+    if (messageWindow) {
+      const top = messageWindow?.scrollHeight - messageWindow?.clientHeight
+      messageWindow.scrollTo(top, 0)
     }
   }
 
@@ -312,12 +314,12 @@ const ChatBox = (): JSX.Element => {
           </InputLabel>
         </FormGroup>
 
-        <Box className={classes.messageContainer}>
-          <Grid className={classes.messageWindow}
-                direction="column"
-                id="temp"
-
-                container
+        <Box
+          id="messageWindow"
+          className={classes.messageContainer}>
+          <Grid
+            direction="column"
+            container
           >
             <Box display="flex"
                  flexDirection="column"
@@ -331,21 +333,22 @@ const ChatBox = (): JSX.Element => {
                 (<Grid
 
                   key={message.messageId}
-                  className={checkSender(message.senderProfileId)}
+                  className={`${checkSender(message.senderProfileId)} ${classes.message}`}
                 >
                   <Typography
-                    className={checkSenderName(message.senderProfileId)}
+                    className={`${checkSenderName(message.senderProfileId)} ${classes.messageBubble}`}
                     display="inline"
                     style={{
 
-                      backgroundColor: playerColorMap.get(message.senderProfileId)
+                      backgroundColor: `${playerColorMap.get(message.senderProfileId) || '#efead6'}`,
+                      color: `${playerColorMap.get(message.senderProfileId) ? 'white' : 'black'}`
                     }}
                   >
 
-
                     &nbsp;{message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}&nbsp;
+                    {playerColorMap.get(message.senderProfileId) ? '' : '(left)'}
                   </Typography>
-                  <Typography className={classes.messageBorder}
+                  <Typography className={`${classes.messageBorder} ${classes.messageBubble}`}
                               display="inline"
                   >
                     &nbsp;{message.content}&nbsp;
@@ -365,6 +368,7 @@ const ChatBox = (): JSX.Element => {
             id='mentionsInput'
             className={classes.textField}
             value={newText}
+            onKeyUp={e => !e.shiftKey && e.key === 'Enter' ? sendMessage(newText) : undefined}
             onChange={(e) => setNewText(e.target.value)}
             onFocus={onFocus}
             onBlur={onBlur}

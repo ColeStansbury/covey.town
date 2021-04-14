@@ -132,6 +132,7 @@ const useStyles = makeStyles(() => ({
     alignItems: 'center',
   },
   fabIcon: {
+    zIndex: 10,
     width: '45px',
     height: '45px',
     position: 'absolute',
@@ -140,10 +141,12 @@ const useStyles = makeStyles(() => ({
   '@media (max-width: 1280px)': {
     chatBox: {
       top: '200px',
+      maxHeight: '568px',
     },
     fabIcon: {
       width: '25px',
       height: '25px',
+      top: 'calc(768 - 25)',
     },
   }
 }));

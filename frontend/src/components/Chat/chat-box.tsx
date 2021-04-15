@@ -142,7 +142,6 @@ const useStyles = makeStyles(() => ({
   },
   '@media (max-width: 1280px)': {
     chatBox: {
-      top: '200px',
       maxHeight: '568px',
     },
     fabIcon: {

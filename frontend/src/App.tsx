@@ -236,7 +236,6 @@ async function GameController(initData: TownJoinResponse,
 
   function initializeColorMap(players: ServerPlayer[]): Map<string, string> {
     const colorMap = new Map<string, string>();
-    let lastColor: string;
     players.forEach(player => {
       const color = MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)];
       colorMap.set(player._id, color);

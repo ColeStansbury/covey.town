@@ -25,7 +25,7 @@ const ChatView = (): JSX.Element => {
 
   const classes = useStyles();
   const [view, setView] = useState<boolean>(false)
-
+  const color = view ? 'secondary' : 'action';
   return (
     <>
       <Hidden only={['xs', 'sm', 'md', 'lg']}>
@@ -37,6 +37,7 @@ const ChatView = (): JSX.Element => {
         }
         <Fab className={classes.chatToggle}>
           <ForumIcon
+            color={color}
             onClick={() => setView(!view)}/>
         </Fab>
       </Hidden>

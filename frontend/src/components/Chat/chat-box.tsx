@@ -148,6 +148,10 @@ const useStyles = makeStyles(() => ({
       width: '25px',
       height: '25px',
       top: 'calc(768 - 25)',
+      '& svg': {
+        width: '.8em',
+        height: '.8em',
+      },
     },
   }
 }));

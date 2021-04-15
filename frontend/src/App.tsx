@@ -34,6 +34,7 @@ import PlayerMessage, { ServerMessage } from "./classes/PlayerMessage";
 import TownsServiceClient, { TownJoinResponse } from './classes/TownsServiceClient';
 import Video from './classes/Video/Video';
 import ChatView from "./components/Chat/ChatView";
+import MESSAGE_COLORS from './components/Chat/message-colors';
 
 
 type CoveyAppUpdate =

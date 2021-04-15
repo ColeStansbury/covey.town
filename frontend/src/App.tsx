@@ -48,7 +48,6 @@ type CoveyAppUpdate =
     myPlayerID: string, socket: Socket,
     players: Player[],
     messages: PlayerMessage[],
-    playerColorMap: Map<string, string>,
     emitMovement: (location: UserLocation) => void,
     emitMessage: (message: PlayerMessage) => void,
   }
@@ -66,7 +65,6 @@ function defaultAppState(): CoveyAppState {
     nearbyPlayers: {nearbyPlayers: []},
     players: [],
     messages: [],
-    playerColorMap: new Map<string, string>(),
     myPlayerID: '',
     currentTownFriendlyName: '',
     currentTownID: '',
@@ -94,7 +92,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
     myPlayerID: state.myPlayerID,
     players: state.players,
     messages: state.messages,
-    playerColorMap: state.playerColorMap,
     currentLocation: state.currentLocation,
     nearbyPlayers: state.nearbyPlayers,
     userName: state.userName,
@@ -137,11 +134,9 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       nextState.socket = update.data.socket;
       nextState.players = update.data.players;
       nextState.messages = update.data.messages;
-      nextState.playerColorMap = update.data.playerColorMap;
       break;
     case 'addPlayer':
       nextState.players = nextState.players.concat([update.player]);
-      nextState.playerColorMap.set(update.player.id, MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)]);
       break;
     case 'playerMoved':
       updatePlayer = nextState.players.find((p) => p.id === update.player.id);
@@ -167,7 +162,6 @@ function appStateReducer(state: CoveyAppState, update: CoveyAppUpdate): CoveyApp
       break;
     case 'playerDisconnect':
       nextState.players = nextState.players.filter((player) => player.id !== update.player.id);
-      nextState.playerColorMap.delete(update.player.id);
       nextState.nearbyPlayers = calculateNearbyPlayers(nextState.players,
         nextState.currentLocation);
       if (samePlayers(nextState.nearbyPlayers, state.nearbyPlayers)) {
@@ -234,15 +228,6 @@ async function GameController(initData: TownJoinResponse,
     dispatchAppUpdate({action: 'weMoved', location});
   };
 
-  function initializeColorMap(players: ServerPlayer[]): Map<string, string> {
-    const colorMap = new Map<string, string>();
-    players.forEach(player => {
-      const color = MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)];
-      colorMap.set(player._id, color);
-    });
-
-    return colorMap;
-  }
 
   dispatchAppUpdate({
     action: 'doConnect',
@@ -257,7 +242,6 @@ async function GameController(initData: TownJoinResponse,
       socket,
       players: initData.currentPlayers.map((sp) => Player.fromServerPlayer(sp)),
       messages: initData.messages.map(message => PlayerMessage.fromServerMessage(message)),
-      playerColorMap: initializeColorMap(initData.currentPlayers),
     },
   });
   return true;

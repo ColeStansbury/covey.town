@@ -90,7 +90,6 @@ function wrappedTownSelection() {
     currentTownIsPubliclyListed: false,
     sessionToken: '',
     userName: '',
-    playerColorMap: new Map<string, string>(),
     socket: null,
     currentLocation: {
       x: 0, y: 0, rotation: 'front', moving: false,

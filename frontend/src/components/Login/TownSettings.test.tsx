@@ -44,7 +44,6 @@ function wrappedTownSettings() {
     currentTownIsPubliclyListed: false,
     sessionToken: '',
     userName: '',
-    playerColorMap: new Map<string, string>(),
     socket: null,
     currentLocation: {
       x: 0,

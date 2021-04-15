@@ -24,8 +24,6 @@ import PlayerMessage from "../../classes/PlayerMessage";
 import PlayerMention, { ServerMentionMessage } from "../../classes/PlayerMention";
 import MentionUser from "../../classes/MentionUser";
 import useMaybeVideo from "../../hooks/useMaybeVideo";
-import MESSAGE_COLORS from './message-colors';
-import { ServerPlayer } from '../../classes/Player';
 
 
 const useStyles = makeStyles(() => ({
@@ -173,9 +171,9 @@ const ChatBox = (): JSX.Element => {
     currentTownFriendlyName,
     players,
     socket,
+    playerColorMap
   } = useCoveyAppState();
-  const [newText, setNewText] = useState<string>('');
-  const [colors, setColors] = useState<Map<string, string>>(new Map([]));
+  const [newText, setNewText] = useState<string>('')
   const [newRecipient, setNewRecipient] = useState<'town' | { recipientId: string }>('town');
   const classes = useStyles();
   const [users, setUsers] = useState<MentionUser []>([]);
@@ -202,7 +200,7 @@ const ChatBox = (): JSX.Element => {
   useEffect(() => {
     setUsers(players.filter(p => p.id !== myPlayerID)
       .map(player => new MentionUser(player.id, player.userName)));
-  }, [myPlayerID, players]);
+  }, [myPlayerID, players])
 
   useEffect(() => {
     socket?.on('receivePlayerMention', (serverMessage: ServerMentionMessage) => {
@@ -211,24 +209,7 @@ const ChatBox = (): JSX.Element => {
         status: 'success',
       });
     });
-    socket?.on('playerDisconnect', (player: ServerPlayer) => {
-      setColors(c => {
-        c.delete(player._id);
-        return c;
-      })
-    });
   }, [socket, toast])
-
-  useEffect(() =>
-    setColors(c => {
-      players.forEach(p => {
-        if (!c.get(p.id)) {
-          c.set(p.id,
-            MESSAGE_COLORS[Math.floor(Math.random() * MESSAGE_COLORS.length)])
-        }
-      });
-      return c;
-    }), [players])
 
   useEffect(() => {
     scrollToBottom()
@@ -361,15 +342,15 @@ const ChatBox = (): JSX.Element => {
                     display="inline"
                     style={{
 
-                      backgroundColor: `${colors.get(message.senderProfileId) || '#efead6'}`,
-                      color: `${colors.get(message.senderProfileId) ? 'white' : 'black'}`
+                      backgroundColor: `${playerColorMap.get(message.senderProfileId) || '#efead6'}`,
+                      color: `${playerColorMap.get(message.senderProfileId) ? 'white' : 'black'}`
                     }}
                   >
 
                     &nbsp;
                     {message.recipient !== 'town' ? '(private) ' : ''}{message.senderName}
                     &nbsp;
-                    {colors.get(message.senderProfileId) ? '' : '(left)'}
+                    {playerColorMap.get(message.senderProfileId) ? '' : '(left)'}
                   </Typography>
                   <Typography className={`${classes.messageBorder} ${classes.messageBubble}`}
                               display="inline"

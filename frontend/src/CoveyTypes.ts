@@ -24,6 +24,7 @@ export type CoveyAppState = {
   currentTownID: string,
   currentTownIsPubliclyListed: boolean,
   messages: PlayerMessage[],
+  playerColorMap: Map<string, string>,
   myPlayerID: string,
   players: Player[],
   currentLocation: UserLocation,

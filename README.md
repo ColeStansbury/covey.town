@@ -12,6 +12,18 @@ The frontend implements video chat using the [Twilio Programmable Video](https:/
 
 A backend service (in the `services/roomService` directory) implements the application logic: tracking which "towns" are available to be joined, and the state of each of those towns.
 
+## Text-Chat Enabled for Covey.Town
+
+Text-chat has been added to CoveyTown with following broad features:
+
+1. All the users in a town are able to chat with each other
+2. Users within the town are able to send private texts to each other
+3. Users are able to draw attention of other users in the chat-box through 'Mentions'
+
+
+![Covey.Town TextChat](docs/coveyTownTextChat.PNG)
+
+
 ## Running this app locally
 
 Running the application locally entails running both the backend service and a frontend.
@@ -53,6 +65,6 @@ The frontend will automatically re-compile and reload in your browser if you cha
 [Netlify URL](https://sleepy-hypatia-8598e8.netlify.app/)
 
 ### Chat Service Tests
-Tests from previous Homeworks modified to reflect changes in exiting CoveyTown codebase
-New tests for user stories implemented are prefixed with "New Feature Test" in test description 
+Run `npm test` in `services/roomService` directory to run tests written for backend
+New tests for text-chat user stories implemented are prefixed with "New Feature Test" in test description 
 All new tests are located in "CoveyTownsSocket.test.ts" and "CoveyTownController.test.ts" along with previous tests from Homeworks

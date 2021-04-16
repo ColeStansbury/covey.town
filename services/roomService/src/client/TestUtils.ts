@@ -4,7 +4,6 @@ import { Socket as ServerSocket } from 'socket.io';
 import { AddressInfo } from 'net';
 import http from 'http';
 import { UserLocation } from '../CoveyTypes';
-import PlayerMessage from '../types/PlayerMessage';
 
 export type RemoteServerPlayer = {
   location: UserLocation, _userName: string, _id: string
@@ -16,11 +15,11 @@ export type RemoteServerPlayerMessage = {
   _senderName: string,
   _content: string,
   recipient: 'town' | { recipientId: string },
-  
+
 };
 
 export type RemoteServerPlayerMention = {
-  
+
   _senderProfileId: string,
   _senderName: string,
   recipient: string,
